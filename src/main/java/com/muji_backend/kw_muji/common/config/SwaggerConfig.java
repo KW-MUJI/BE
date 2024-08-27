@@ -17,7 +17,7 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("Medical API Documentation")
+                .title("API Documentation")
                 .description("springdoc Swagger UI 테스트")
                 .version("1.0.0");
     }
