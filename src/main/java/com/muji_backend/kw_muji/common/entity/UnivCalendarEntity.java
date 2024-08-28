@@ -21,4 +21,9 @@ public class UnivCalendarEntity {
 
     @Column(nullable = false)
     private LocalDateTime eventDate;
+
+    // users : univCalendar = 1 : N
+    @ManyToOne(targetEntity = UserEntity.class)
+    @JoinColumn(name = "userId", nullable = false)
+    private UserEntity users;
 }

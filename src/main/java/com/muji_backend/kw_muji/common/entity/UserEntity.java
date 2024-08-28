@@ -1,7 +1,11 @@
 package com.muji_backend.kw_muji.common.entity;
 
+import com.muji_backend.kw_muji.common.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -29,5 +33,31 @@ public class UserEntity {
     @Column(nullable = false)
     private int stuNum;
 
-    // enum - role
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+
+    // users : univCalendar = 1 : N
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UnivCalendarEntity> univCalendar = new ArrayList<>();
+
+    // users : userCalendar = 1 : N
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserCalendarEntity> userCalendar = new ArrayList<>();
+
+    // users : resume = 1 : N
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResumeEntity> resume = new ArrayList<>();
+
+    // users : survey = 1 : N
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SurveryEntity> survey = new ArrayList<>();
+
+    // users : response = 1 : N
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResponseEntity> response = new ArrayList<>();
+
+    // users : participation = 1 : N
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParticipationEntity> participation = new ArrayList<>();
 }

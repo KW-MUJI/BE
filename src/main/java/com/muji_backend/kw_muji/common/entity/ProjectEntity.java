@@ -1,10 +1,13 @@
 package com.muji_backend.kw_muji.common.entity;
 
+import com.muji_backend.kw_muji.common.entity.enums.ProjectType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "project")
@@ -26,6 +29,10 @@ public class ProjectEntity {
     @Column
     private String resumePath;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProjectType projectType;
+
     @Column(nullable = false)
     private boolean start;
 
@@ -40,4 +47,12 @@ public class ProjectEntity {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         createdAt = now;
     }
+
+    // project : userCalendar = 1 : N
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserCalendarEntity> userCalendar = new ArrayList<>();
+
+    // project : participation = 1 : N
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParticipationEntity> participation = new ArrayList<>();
 }

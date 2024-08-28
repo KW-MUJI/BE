@@ -16,4 +16,9 @@ public class ResumeEntity {
 
     @Column(nullable = false)
     private String resumePath;
+
+    // users : resume = 1 : N
+    @ManyToOne(targetEntity = UserEntity.class)
+    @JoinColumn(name = "userId", nullable = false)
+    private UserEntity users;
 }

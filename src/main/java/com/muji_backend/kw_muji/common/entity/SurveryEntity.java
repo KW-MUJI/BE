@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "survey")
@@ -34,4 +36,17 @@ public class SurveryEntity {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         createdAt = now;
     }
+
+    // users : survey = 1 : N
+    @ManyToOne(targetEntity = UserEntity.class)
+    @JoinColumn(name = "userId", nullable = false)
+    private UserEntity users;
+
+    // survey : response = 1 : N
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResponseEntity> response = new ArrayList<>();
+
+    // survey : question = 1 : N
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestionEntity> question = new ArrayList<>();
 }

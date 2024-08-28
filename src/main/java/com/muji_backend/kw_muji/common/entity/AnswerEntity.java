@@ -16,4 +16,19 @@ public class AnswerEntity {
 
     @Column(nullable = false)
     private String answerText;
+
+    // response : answer = 1 : N
+    @ManyToOne(targetEntity = ResponseEntity.class)
+    @JoinColumn(name = "responseId", nullable = false)
+    private ResponseEntity response;
+
+    // question : answer = 1 : N
+    @ManyToOne(targetEntity = QuestionEntity.class)
+    @JoinColumn(name = "questionId", nullable = false)
+    private QuestionEntity question;
+
+    // choice : answer = 1 : N
+    @ManyToOne(targetEntity = ChoiceEntity.class)
+    @JoinColumn(name = "choiceId", nullable = false)
+    private ChoiceEntity choice;
 }

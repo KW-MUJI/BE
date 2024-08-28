@@ -1,34 +1,31 @@
 package com.muji_backend.kw_muji.common.entity;
 
+import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "userCalendar")
+@Table(name = "participation")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCalendarEntity {
+public class ParticipationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String title;
+    private ProjectRole role;
 
-    @Column(nullable = false)
-    private LocalDateTime eventDate;
-
-    // users : userCalendar = 1 : N
+    // users : participation = 1 : N
     @ManyToOne(targetEntity = UserEntity.class)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity users;
 
-    // project : userCalendar = 1 : N
+    // project : participation = 1 : N
     @ManyToOne(targetEntity = ProjectEntity.class)
-    @JoinColumn(name = "projectId", nullable = false)
+    @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity project;
 }
