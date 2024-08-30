@@ -10,8 +10,11 @@ import java.util.List;
 @Service
 public class NoticeServiceImpl implements NoticeService {
 
-    @Autowired
-    NoticeRepository noticeRepository;
+    private final NoticeRepository noticeRepository;
+
+    public NoticeServiceImpl(NoticeRepository noticeRepository) {
+        this.noticeRepository = noticeRepository;
+    }
 
     @Override
     public List<NoticeResponse> getKwHomeNotices(int page, String searchVal, String srCategoryId) {

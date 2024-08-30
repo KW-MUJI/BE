@@ -12,8 +12,11 @@ import java.util.List;
 @RestController
 public class NoticeController {
 
-    @Autowired
-    NoticeService noticeService;
+    private final NoticeService noticeService;
+
+    public NoticeController(NoticeService noticeService) {
+        this.noticeService = noticeService;
+    }
 
     @GetMapping("/api/notices")
     public List<NoticeResponse> getKwHomeNotices(

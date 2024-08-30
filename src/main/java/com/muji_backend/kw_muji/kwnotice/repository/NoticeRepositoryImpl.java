@@ -22,8 +22,11 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     @Value("${base.url}")
     private String BASE_URL;
 
-    @Autowired
-    NoticeUrlParser parser;
+    private final NoticeUrlParser parser;
+
+    public NoticeRepositoryImpl(NoticeUrlParser parser) {
+        this.parser = parser;
+    }
 
     @Override
     public List<NoticeResponse> getKwHomeNotices(int page, String searchVal, String srCategoryId) {
