@@ -96,4 +96,11 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
         return urlWithParams.toString();
     }
+
+    private Document fetchDocument(String url) throws IOException {
+        // 웹이 요청을 브라우저에서 온 것처럼 인식하도록 설정
+        return Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+                .get();
+    }
 }
