@@ -15,6 +15,9 @@ public class ParticipationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private String resumePath;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProjectRole role;
