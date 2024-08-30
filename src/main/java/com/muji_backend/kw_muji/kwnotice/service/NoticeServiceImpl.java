@@ -2,7 +2,6 @@ package com.muji_backend.kw_muji.kwnotice.service;
 
 import com.muji_backend.kw_muji.kwnotice.dto.response.NoticeResponse;
 import com.muji_backend.kw_muji.kwnotice.repository.NoticeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
