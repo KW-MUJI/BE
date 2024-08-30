@@ -82,4 +82,18 @@ public class NoticeRepositoryImpl implements NoticeRepository {
         }
         return notices;
     }
+
+    private String buildUrl(int page, String searchVal, String srCategoryId) {
+        StringBuilder urlWithParams = new StringBuilder(kwHomeNoticesUrl + "?tpage=" + page);
+
+        if (searchVal != null && !searchVal.isEmpty()) {
+            urlWithParams.append("&searchVal=").append(URLEncoder.encode(searchVal, StandardCharsets.UTF_8));
+        }
+
+        if (srCategoryId != null && !srCategoryId.isEmpty()) {
+            urlWithParams.append("&srCategoryId=").append(srCategoryId);
+        }
+
+        return urlWithParams.toString();
+    }
 }
