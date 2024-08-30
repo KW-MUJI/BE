@@ -5,5 +5,5 @@ import com.muji_backend.kw_muji.kwnotice.dto.response.NoticeResponse;
 import java.util.List;
 
 public interface NoticeService {
-    List<NoticeResponse> getKwHomeNotices(int page, String searchVal, String srCategoryId);
+    NoticeResponse getKwHomeNotices(int page, String searchVal, String srCategoryId);
 }

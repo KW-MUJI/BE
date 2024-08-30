@@ -16,7 +16,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public List<NoticeResponse> getKwHomeNotices(int page, String searchVal, String srCategoryId) {
+    public NoticeResponse getKwHomeNotices(int page, String searchVal, String srCategoryId) {
         return noticeRepository.getKwHomeNotices(page, searchVal, srCategoryId);
     }
 }
