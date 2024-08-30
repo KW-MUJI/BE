@@ -26,8 +26,6 @@ public class ProjectEntity {
     @Column(nullable = false)
     private String description;
 
-    @Column
-    private String resumePath;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
