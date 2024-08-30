@@ -28,7 +28,7 @@ public class NoticeController {
             if (page <= 0) {
                 throw new IllegalArgumentException("페이지 번호는 1 이상이어야 합니다.");
             }
-            List<NoticeResponse> notices = noticeService.getKwHomeNotices(page, searchVal, srCategoryId);
+            NoticeResponse notices = noticeService.getKwHomeNotices(page, searchVal, srCategoryId);
             return ResponseEntity.ok().body(Map.of("code", 200, "data", notices));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));

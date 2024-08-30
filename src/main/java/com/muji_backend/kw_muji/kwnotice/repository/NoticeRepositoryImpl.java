@@ -28,7 +28,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
-    public List<NoticeResponse> getKwHomeNotices(int page, String searchVal, String srCategoryId) {
+    public NoticeResponse getKwHomeNotices(int page, String searchVal, String srCategoryId) {
         try {
             String url = buildUrl(page, searchVal, srCategoryId);
             Document doc = fetchDocument(url);

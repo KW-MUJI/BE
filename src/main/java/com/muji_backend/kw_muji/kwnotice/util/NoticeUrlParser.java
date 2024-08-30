@@ -15,9 +15,10 @@ public class NoticeUrlParser {
     private static final String CATEGORY_SELECTOR = "strong.category";
     private static final String TITLE_SELECTOR = "div.board-text a";
     private static final String INFO_SELECTOR = "p.info";
+    private static final String LAST_PAGE_SELECTOR = "a.ico-page.last";
 
-    public List<NoticeResponse> parse(Document doc, String baseUrl) {
-        List<NoticeResponse> notices = new ArrayList<>();
+    public NoticeResponse parse(Document doc, String baseUrl) {
+        List<NoticeResponse.Notice>  notices = new ArrayList<>();
         Elements elements = doc.select("div.board-list-box ul li");
 
         for (Element element : elements) {
@@ -33,12 +34,20 @@ public class NoticeUrlParser {
             String updatedDate = infoParts[2].trim().replace("수정일 ", "");
             String team = infoParts[3].trim();
 
-            NoticeResponse notice = new NoticeResponse(
+            NoticeResponse.Notice notice = new NoticeResponse.Notice(
                     category, title, link, views, createdDate, updatedDate, team
             );
             notices.add(notice);
         }
 
-        return notices;
+        // 최대 페이지 추출
+        int maxPage = 1;
+        Element lastPageElement = doc.select(LAST_PAGE_SELECTOR).first();
+        if (lastPageElement != null) {
+            String lastPageHref = lastPageElement.attr("href");
+            maxPage = Integer.parseInt(lastPageHref.split("tpage=")[1].split("&")[0]);
+        }
+
+        return new NoticeResponse(notices, maxPage);
     }
 }
