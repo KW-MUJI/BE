@@ -36,6 +36,10 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 이메일 인증
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
