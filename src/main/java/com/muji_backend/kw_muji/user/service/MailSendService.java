@@ -16,7 +16,7 @@ import java.util.Random;
 @Slf4j
 @Service
 public class MailSendService {
-    private final Redis redis;
+    private final RedisService redis;
     private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")

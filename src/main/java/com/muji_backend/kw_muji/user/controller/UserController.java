@@ -1,7 +1,7 @@
 package com.muji_backend.kw_muji.user.controller;
 
-import com.muji_backend.kw_muji.kwnotice.dto.response.NoticeResponse;
 import com.muji_backend.kw_muji.user.service.MailSendService;
+import com.muji_backend.kw_muji.user.service.UserService;
 import com.muji_backend.kw_muji.user.util.ValidCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +21,7 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class UserController {
     private final MailSendService mailSendService;
+    private final UserService userService;
 
 //    @PostMapping("/signUp")
 //    public ResponseEntity<>
@@ -32,7 +33,9 @@ public class UserController {
                 throw new IllegalArgumentException("이메일이 규칙에 맞지 않음");
             }
 
-            // 메일 주소 중복 검사
+            if(userService.duplicateEmail(dto.getEmail())) {
+                throw new IllegalArgumentException("이미 가입된 이메일");
+            }
 
             String authNum = mailSendService.joinEmail(dto.getEmail());
 
