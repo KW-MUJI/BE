@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmailRequest {
+public class Email {
     @NotEmpty(message = "이메일을 입력해 주세요")
     private String email;
-    private boolean check;
+
+    @NotEmpty(message = "인증 번호를 입력해 주세요")
+    private String authNum;
 }
