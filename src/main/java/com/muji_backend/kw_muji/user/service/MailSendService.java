@@ -56,7 +56,6 @@ public class MailSendService {
         return Integer.toString(authNum);
     }
 
-    //이메일을 전송합니다.
     public void mailSend(String setFrom, String toMail, String title, String content, int authNum) {
         MimeMessage message = mailSender.createMimeMessage();
         try {

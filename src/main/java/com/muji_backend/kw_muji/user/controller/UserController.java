@@ -75,10 +75,15 @@ public class UserController {
     @PostMapping("/mailSend")
     public ResponseEntity<Map<String, Object>> mailSend(@RequestBody @Valid EmailDTO dto, BindingResult bindingResult) {
         try {
-            userService.validation(bindingResult, "email");
+            if (dto.getFlag()) { // 회원가입
+                userService.validation(bindingResult, "email");
 
-            if (userService.duplicateEmail(dto.getEmail()))
-                throw new IllegalArgumentException("이미 가입된 이메일");
+                if (userService.duplicateEmail(dto.getEmail()))
+                    throw new IllegalArgumentException("이미 가입된 이메일");
+            } else { // 비밀번호 찾기
+                if (!userService.duplicateEmail(dto.getEmail()))
+                    throw new IllegalArgumentException("가입되지 않은 이메일");
+            }
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", mailSendService.joinEmail(dto.getEmail())));
         } catch (IllegalArgumentException e) {
@@ -123,6 +128,22 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "로그인 오류. 잠시 후 다시 시도해주세요."));
+        }
+    }
+
+    @PostMapping("/findPw")
+    public ResponseEntity<Map<String, Object>> findPassword(@RequestBody EmailDTO dto) {
+        try {
+            // 인증번호 확인
+            if (!mailSendService.CheckAuthNum(dto.getEmail(), dto.getAuthNum()))
+                throw new IllegalArgumentException("인증번호가 일치하지 않음");
+
+            redisService.deleteData(dto.getAuthNum());
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "오류. 잠시 후 다시 시도해주세요."));
         }
     }
 }
