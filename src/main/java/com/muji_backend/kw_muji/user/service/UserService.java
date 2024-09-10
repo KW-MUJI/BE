@@ -5,6 +5,9 @@ import com.muji_backend.kw_muji.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -14,6 +17,11 @@ public class UserService {
 
     public Boolean duplicateEmail(final String email) {
         return userRepo.existsByEmail(email);
+    }
+
+    public void validation(BindingResult bindingResult, String fieldName) {
+        if (bindingResult.hasFieldErrors(fieldName))
+            throw new IllegalArgumentException(Objects.requireNonNull(bindingResult.getFieldError(fieldName)).getDefaultMessage());
     }
 
     public void createUser(final UserEntity entity) {

@@ -3,6 +3,7 @@ package com.muji_backend.kw_muji.user.controller;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.user.dto.UserDTO;
 import com.muji_backend.kw_muji.user.service.MailSendService;
+import com.muji_backend.kw_muji.user.service.RedisService;
 import com.muji_backend.kw_muji.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,15 +28,28 @@ import java.util.Map;
 public class UserController {
     private final MailSendService mailSendService;
     private final UserService userService;
+    private final RedisService redisService;
 
     private final PasswordEncoder pwEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/signUp")
-    public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserDTO dto) {
+    public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid UserDTO dto, BindingResult bindingResult) {
         try {
             // 유저 유효성 검사
+            userService.validation(bindingResult, "name");
+            userService.validation(bindingResult, "stuNum");
+            userService.validation(bindingResult, "major");
+            userService.validation(bindingResult, "email");
+            userService.validation(bindingResult, "authNum");
+            userService.validation(bindingResult, "password");
+            userService.validation(bindingResult, "confirmPassword");
+
+            if(!dto.getPassword().equals(dto.getConfirmPassword()))
+                throw new IllegalArgumentException("비밀번호가 일치하지 않음");
 
             // 인증번호 확인
+            if(!mailSendService.CheckAuthNum(dto.getEmail(), dto.getAuthNum()))
+                throw new IllegalArgumentException("인증번호가 일치하지 않음");
 
             UserEntity user = UserEntity.builder()
                     .name(dto.getName())
@@ -45,6 +60,7 @@ public class UserController {
                     .build();
 
             userService.createUser(user);
+            redisService.deleteData(dto.getAuthNum());
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
@@ -57,8 +73,7 @@ public class UserController {
     @PostMapping("/mailSend")
     public ResponseEntity<Map<String, Object>> mailSend(@RequestBody @Valid EmailDTO dto, BindingResult bindingResult) {
         try {
-            if(bindingResult.hasErrors())
-                throw new IllegalArgumentException("이메일이 규칙에 맞지 않음");
+            userService.validation(bindingResult, "email");
 
             if(userService.duplicateEmail(dto.getEmail()))
                 throw new IllegalArgumentException("이미 가입된 이메일");
@@ -76,6 +91,7 @@ public class UserController {
         try {
             if(!mailSendService.CheckAuthNum(dto.getEmail(), dto.getAuthNum())) 
                 throw new IllegalArgumentException("인증번호가 일치하지 않음");
+
             return ResponseEntity.ok().body(Map.of("code", 200, "authCheck", true));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
