@@ -33,6 +33,7 @@ public class TokenProvider {
                 .setIssuedAt(new Date()) // 토큰 발급 시간
                 .setExpiration(expiryDate) // 토큰 만료 시간
                 .claim("id", user.getId()) // 토큰에 사용자 아이디 추가하여 전달
+                .claim("email", user.getEmail())
                 .compact(); // 토큰 생성
     }
 
@@ -49,6 +50,7 @@ public class TokenProvider {
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .claim("id", user.getId())
+                .claim("email", user.getEmail())
                 .compact();
     }
 

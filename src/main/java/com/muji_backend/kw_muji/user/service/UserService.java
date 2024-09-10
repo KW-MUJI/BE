@@ -46,4 +46,11 @@ public class UserService {
             throw new IllegalArgumentException("오류 발생");
         }
     }
+
+    public void updatePw(final String email, final UserEntity user) {
+        final UserEntity updateUser = userRepo.findByEmail(email);
+        updateUser.setPassword(user.getPassword());
+
+        userRepo.save(updateUser);
+    }
 }
