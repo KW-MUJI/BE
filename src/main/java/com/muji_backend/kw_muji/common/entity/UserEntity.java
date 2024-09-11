@@ -51,7 +51,7 @@ public class UserEntity {
 
     // users : survey = 1 : N
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SurveryEntity> survey = new ArrayList<>();
+    private List<SurveyEntity> survey = new ArrayList<>();
 
     // users : response = 1 : N
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
