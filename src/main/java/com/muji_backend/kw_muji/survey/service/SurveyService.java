@@ -42,7 +42,7 @@ public class SurveyService {
                         .surveyId(survey.getId())
                         .title(survey.getTitle())
                         .description(survey.getDescription())
-                        .createdAt(survey.getCreatedAt())
+                        .createdAt(survey.getCreatedAt().toLocalDate())
                         .endDate(survey.getEndDate())
                         .build())
                 .collect(Collectors.toList());

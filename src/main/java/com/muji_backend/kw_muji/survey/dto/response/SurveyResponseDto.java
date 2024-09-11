@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -24,7 +24,7 @@ public class SurveyResponseDto {
         private Long surveyId;
         private String title;
         private String description;
-        private LocalDateTime createdAt;
-        private LocalDateTime endDate;
+        private LocalDate createdAt;
+        private LocalDate endDate;
     }
 }

@@ -3,6 +3,7 @@ package com.muji_backend.kw_muji.common.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class SurveyEntity {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @PrePersist // entity가 영속화되기 직전에 실행
     protected void onCreate() {
