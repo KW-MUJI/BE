@@ -26,6 +26,7 @@ public class SurveyService {
         if (search == null || search.isBlank()) {
             surveyPage = surveyRepository.findAll(pageRequest);
         } else {
+            surveyPage = surveyRepository.findByTitleContainingOrDescriptionContaining(search, search, pageRequest);
         }
 
         List<SurveyResponseDto.SurveyItemDto> surveyItems = surveyPage.getContent().stream()
