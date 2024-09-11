@@ -18,9 +18,9 @@ public class ResponseEntity {
     private Long id;
 
     // survey : response = 1 : N
-    @ManyToOne(targetEntity = SurveryEntity.class)
+    @ManyToOne(targetEntity = SurveyEntity.class)
     @JoinColumn(name = "surveyId", nullable = false)
-    private SurveryEntity survey;
+    private SurveyEntity survey;
 
     // users : response = 1 : N
     @ManyToOne(targetEntity = UserEntity.class)

@@ -26,9 +26,9 @@ public class QuestionEntity {
     private QuestionType questionType;
 
     // survey : question = 1 : N
-    @ManyToOne(targetEntity = SurveryEntity.class)
+    @ManyToOne(targetEntity = SurveyEntity.class)
     @JoinColumn(name = "surveyId", nullable = false)
-    private SurveryEntity survey;
+    private SurveyEntity survey;
 
     // question : choice = 1 : N
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
