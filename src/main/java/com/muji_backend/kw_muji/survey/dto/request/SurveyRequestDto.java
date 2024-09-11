@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class SurveyRequestDto {
 
     private String title;
@@ -21,6 +22,7 @@ public class SurveyRequestDto {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class QuestionDto {
         private String questionText;
         private QuestionType questionType; // "TEXT" 또는 "CHOICE"
@@ -28,6 +30,7 @@ public class SurveyRequestDto {
 
         @Data
         @AllArgsConstructor
+        @NoArgsConstructor
         public static class ChoiceDto {
             private String choiceText;
         }
