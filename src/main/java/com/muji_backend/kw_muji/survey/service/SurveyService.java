@@ -1,17 +1,10 @@
 package com.muji_backend.kw_muji.survey.service;
 
-import com.muji_backend.kw_muji.common.entity.ChoiceEntity;
-import com.muji_backend.kw_muji.common.entity.QuestionEntity;
 import com.muji_backend.kw_muji.common.entity.SurveyEntity;
-import com.muji_backend.kw_muji.common.entity.UserEntity;
-import com.muji_backend.kw_muji.common.entity.enums.QuestionType;
-import com.muji_backend.kw_muji.survey.dto.request.SurveyRequestDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyDetailResponseDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyResponseDto;
 import com.muji_backend.kw_muji.survey.repository.SurveyRepository;
-import com.muji_backend.kw_muji.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -46,15 +39,31 @@ public class SurveyService {
     // == Private Methods ==
 
     private Page<SurveyEntity> findSurveysBySearch(String search, PageRequest pageRequest) {
-
+        if (search == null || search.isBlank()) {
+            return surveyRepository.findAll(pageRequest);
+        }
+        return surveyRepository.findByTitleContainingOrDescriptionContaining(search, search, pageRequest);
     }
 
     private List<SurveyResponseDto.SurveyItemDto> mapToSurveyItemDtos(Page<SurveyEntity> surveyPage) {
-
+        return surveyPage.getContent().stream()
+                .map(survey -> SurveyResponseDto.SurveyItemDto.builder()
+                        .surveyId(survey.getId())
+                        .title(survey.getTitle())
+                        .description(survey.getDescription())
+                        .createdAt(survey.getCreatedAt().toLocalDate())
+                        .endDate(survey.getEndDate())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private SurveyResponseDto buildSurveyResponse(Page<SurveyEntity> surveyPage, List<SurveyResponseDto.SurveyItemDto> surveyItems) {
-
+        return SurveyResponseDto.builder()
+                .currentPage(surveyPage.getNumber())
+                .totalPages(surveyPage.getTotalPages())
+                .totalItems(surveyPage.getTotalElements())
+                .surveys(surveyItems)
+                .build();
     }
 
     /**
