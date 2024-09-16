@@ -1,8 +1,10 @@
 package com.muji_backend.kw_muji.survey.service;
 
+import com.muji_backend.kw_muji.common.entity.ChoiceEntity;
 import com.muji_backend.kw_muji.common.entity.QuestionEntity;
 import com.muji_backend.kw_muji.common.entity.SurveyEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
+import com.muji_backend.kw_muji.common.entity.enums.QuestionType;
 import com.muji_backend.kw_muji.survey.dto.request.SurveyRequestDto;
 import com.muji_backend.kw_muji.survey.repository.SurveyRepository;
 import com.muji_backend.kw_muji.user.repository.UserRepository;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,14 +44,39 @@ public class SurveyCreateService {
     // == Private Methods ==
 
     private UserEntity findUserById(Long userId) {
-
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다." + userId));
     }
 
     private SurveyEntity createSurveyEntity(UserEntity user, SurveyRequestDto requestDto) {
-
+        return SurveyEntity.builder()
+                .title(requestDto.getTitle())
+                .description(requestDto.getDescription())
+                .endDate(requestDto.getEndDate())
+                .users(user)
+                .build();
     }
 
     private List<QuestionEntity> mapToQuestionEntities(SurveyRequestDto requestDto, SurveyEntity savedSurvey) {
+        return requestDto.getQuestions().stream()
+                .map(questionDto -> {
+                    QuestionEntity question = QuestionEntity.builder()
+                            .questionText(questionDto.getQuestionText())
+                            .questionType(questionDto.getQuestionType())
+                            .survey(savedSurvey)
+                            .build();
 
+                    if (questionDto.getQuestionType() == QuestionType.CHOICE && questionDto.getChoices() != null) {
+                        List<ChoiceEntity> choices = questionDto.getChoices().stream()
+                                .map(choiceDto -> ChoiceEntity.builder()
+                                        .choiceText(choiceDto.getChoiceText())
+                                        .question(question)
+                                        .build())
+                                .collect(Collectors.toList());
+                        question.setChoice(choices); // 객관식 질문일 경우에만 choices를 설정
+                    }
+
+                    return question;
+                }).collect(Collectors.toList());
     }
 }
