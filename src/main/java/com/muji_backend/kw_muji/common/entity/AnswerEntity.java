@@ -29,6 +29,6 @@ public class AnswerEntity {
 
     // choice : answer = 1 : N
     @ManyToOne(targetEntity = ChoiceEntity.class)
-    @JoinColumn(name = "choiceId", nullable = false)
+    @JoinColumn(name = "choiceId")
     private ChoiceEntity choice;
 }
