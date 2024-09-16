@@ -40,4 +40,16 @@ public class SurveyController {
             return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
         }
     }
+
+    @GetMapping("/{surveyId}")
+    public ResponseEntity<?> getSurvey(@PathVariable Long surveyId) {
+        try {
+            SurveyDetailResponseDto responseDto = surveyService.getSurveyDetail(surveyId);
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", responseDto));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
+        }
+    }
 }
