@@ -6,6 +6,7 @@ import com.muji_backend.kw_muji.common.entity.SurveyEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.QuestionType;
 import com.muji_backend.kw_muji.survey.dto.request.SurveyRequestDto;
+import com.muji_backend.kw_muji.survey.dto.response.SurveyDetailResponseDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyResponseDto;
 import com.muji_backend.kw_muji.survey.repository.SurveyRepository;
 import com.muji_backend.kw_muji.user.repository.UserRepository;
@@ -114,5 +115,36 @@ public class SurveyService {
         surveyRepository.save(savedSurvey);
 
         return savedSurvey.getId();
+    }
+
+    /**
+     * 설문조사의 상세 정보를 반환하는 메서드
+     *
+     * @param surveyId 설문조사 ID
+     */
+    public SurveyDetailResponseDto getSurveyDetail(Long surveyId) {
+        SurveyEntity survey = surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 설문조사가 존재하지 않습니다: " + surveyId));
+
+        return SurveyDetailResponseDto.builder()
+                .surveyId(survey.getId())
+                .title(survey.getTitle())
+                .description(survey.getDescription())
+                .createdAt(survey.getCreatedAt().toLocalDate())
+                .endDate(survey.getEndDate())
+                .questions(survey.getQuestion().stream()
+                        .map(question -> SurveyDetailResponseDto.QuestionDto.builder()
+                                .questionId(question.getId())
+                                .questionText(question.getQuestionText())
+                                .questionType(question.getQuestionType())
+                                .choices(question.getChoice().stream()
+                                        .map(choice -> SurveyDetailResponseDto.QuestionDto.ChoiceDto.builder()
+                                                .choiceId(choice.getId())
+                                                .choiceText(choice.getChoiceText())
+                                                .build())
+                                        .toList())
+                                .build())
+                        .toList())
+                .build();
     }
 }
