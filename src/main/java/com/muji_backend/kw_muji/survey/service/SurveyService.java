@@ -1,6 +1,8 @@
 package com.muji_backend.kw_muji.survey.service;
 
+import com.muji_backend.kw_muji.common.entity.QuestionEntity;
 import com.muji_backend.kw_muji.common.entity.SurveyEntity;
+import com.muji_backend.kw_muji.common.entity.enums.QuestionType;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyDetailResponseDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyResponseDto;
 import com.muji_backend.kw_muji.survey.repository.SurveyRepository;
@@ -67,33 +69,55 @@ public class SurveyService {
     }
 
     /**
-     * 설문조사의 상세 정보를 반환하는 메서드
+     * 설문 조사 상세 정보를 조회하는 메서드
      *
-     * @param surveyId 설문조사 ID
+     * @param surveyId 조회할 설문조사의 ID
      */
     public SurveyDetailResponseDto getSurveyDetail(Long surveyId) {
-        SurveyEntity survey = surveyRepository.findById(surveyId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 설문조사가 존재하지 않습니다: " + surveyId));
+        SurveyEntity survey = findSurveyById(surveyId);
 
+        List<SurveyDetailResponseDto.QuestionDto> questions = survey.getQuestion().stream()
+                .map(this::mapToQuestionDto)
+                .collect(Collectors.toList());
+
+        return buildSurveyDetailResponse(survey, questions);
+    }
+
+    // == Private Methods ==
+
+    private SurveyEntity findSurveyById(Long surveyId) {
+        return surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 설문조사가 존재하지 않습니다: " + surveyId));
+    }
+
+    private SurveyDetailResponseDto.QuestionDto mapToQuestionDto(QuestionEntity question) {
+        List<SurveyDetailResponseDto.QuestionDto.ChoiceDto> choices = null;
+
+        if (question.getQuestionType() == QuestionType.CHOICE) {
+            choices = question.getChoice().stream()
+                    .map(choice -> SurveyDetailResponseDto.QuestionDto.ChoiceDto.builder()
+                            .choiceId(choice.getId())
+                            .choiceText(choice.getChoiceText())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
+        return SurveyDetailResponseDto.QuestionDto.builder()
+                .questionId(question.getId())
+                .questionText(question.getQuestionText())
+                .questionType(question.getQuestionType())
+                .choices(choices)
+                .build();
+    }
+
+    private SurveyDetailResponseDto buildSurveyDetailResponse(SurveyEntity survey, List<SurveyDetailResponseDto.QuestionDto> questions) {
         return SurveyDetailResponseDto.builder()
                 .surveyId(survey.getId())
                 .title(survey.getTitle())
                 .description(survey.getDescription())
                 .createdAt(survey.getCreatedAt().toLocalDate())
                 .endDate(survey.getEndDate())
-                .questions(survey.getQuestion().stream()
-                        .map(question -> SurveyDetailResponseDto.QuestionDto.builder()
-                                .questionId(question.getId())
-                                .questionText(question.getQuestionText())
-                                .questionType(question.getQuestionType())
-                                .choices(question.getChoice().stream()
-                                        .map(choice -> SurveyDetailResponseDto.QuestionDto.ChoiceDto.builder()
-                                                .choiceId(choice.getId())
-                                                .choiceText(choice.getChoiceText())
-                                                .build())
-                                        .toList())
-                                .build())
-                        .toList())
+                .questions(questions)
                 .build();
     }
 }
