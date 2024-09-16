@@ -2,6 +2,7 @@ package com.muji_backend.kw_muji.kwnotice.controller;
 
 import com.muji_backend.kw_muji.kwnotice.dto.response.NoticeResponse;
 import com.muji_backend.kw_muji.kwnotice.service.NoticeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,13 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class NoticeController {
 
     private final NoticeService noticeService;
-
-    public NoticeController(NoticeService noticeService) {
-        this.noticeService = noticeService;
-    }
 
     @GetMapping("/api/notices")
     public ResponseEntity<Map<String, Object>> getKwHomeNotices(

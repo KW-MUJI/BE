@@ -2,6 +2,7 @@ package com.muji_backend.kw_muji.kwnotice.repository;
 
 import com.muji_backend.kw_muji.kwnotice.dto.response.NoticeResponse;
 import com.muji_backend.kw_muji.kwnotice.util.NoticeUrlParser;
+import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Value("${kw.notice.url}")
@@ -23,9 +25,6 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     private final NoticeUrlParser parser;
 
-    public NoticeRepositoryImpl(NoticeUrlParser parser) {
-        this.parser = parser;
-    }
 
     @Override
     public NoticeResponse getKwHomeNotices(int page, String searchVal, String srCategoryId) {
