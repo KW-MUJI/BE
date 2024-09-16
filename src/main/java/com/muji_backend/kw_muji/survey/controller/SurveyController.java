@@ -1,6 +1,7 @@
 package com.muji_backend.kw_muji.survey.controller;
 
 import com.muji_backend.kw_muji.survey.dto.request.SurveyRequestDto;
+import com.muji_backend.kw_muji.survey.dto.response.SurveyDetailResponseDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyResponseDto;
 import com.muji_backend.kw_muji.survey.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
