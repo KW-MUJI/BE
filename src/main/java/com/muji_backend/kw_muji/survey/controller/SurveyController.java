@@ -3,19 +3,21 @@ package com.muji_backend.kw_muji.survey.controller;
 import com.muji_backend.kw_muji.survey.dto.request.SurveyRequestDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyDetailResponseDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyResponseDto;
+import com.muji_backend.kw_muji.survey.service.SurveyCreateService;
 import com.muji_backend.kw_muji.survey.service.SurveyService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/survey")
 public class SurveyController {
 
-    @Autowired
-    private SurveyService surveyService;
+    private final SurveyService surveyService;
+    private final SurveyCreateService surveyCreateService;
 
     @GetMapping
     public ResponseEntity<?> getSurveyList(@RequestParam(value = "search", required = false) String search,
@@ -33,7 +35,7 @@ public class SurveyController {
     @PostMapping("/{userId}")
     public ResponseEntity<?> createSurvey(@PathVariable Long userId, @RequestBody SurveyRequestDto requestDto) {
         try {
-            Long surveyId = surveyService.createSurvey(userId, requestDto);
+            Long surveyId = surveyCreateService.createSurvey(userId, requestDto);
             return ResponseEntity.ok().body(Map.of("code", 200, "surveyId", surveyId));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
