@@ -32,7 +32,7 @@ public class SurveyController {
         }
     }
 
-    @PostMapping("/{userId}")
+    @PostMapping("/create/{userId}")
     public ResponseEntity<?> createSurvey(@PathVariable Long userId, @RequestBody SurveyRequestDto requestDto) {
         try {
             Long surveyId = surveyCreateService.createSurvey(userId, requestDto);
