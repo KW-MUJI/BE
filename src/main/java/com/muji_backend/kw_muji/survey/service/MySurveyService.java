@@ -3,6 +3,7 @@ package com.muji_backend.kw_muji.survey.service;
 import com.muji_backend.kw_muji.common.entity.SurveyEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.survey.dto.response.MySurveyResponseDto;
+import com.muji_backend.kw_muji.survey.dto.response.MySurveyResultResponseDto;
 import com.muji_backend.kw_muji.survey.repository.SurveyRepository;
 import com.muji_backend.kw_muji.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -82,5 +83,15 @@ public class MySurveyService {
     public void deleteSurvey(Long surveyId) {
         SurveyEntity survey = getSurveyById(surveyId);
         surveyRepository.delete(survey);
+    }
+
+    /**
+     * 설문조사 결과를 조회하는 메서드
+     *
+     * @param surveyId 조회할 설문의 ID
+     * @return 설문조사와 응답 결과
+     */
+    public MySurveyResultResponseDto getSurveyResult(Long surveyId) {
+
     }
 }
