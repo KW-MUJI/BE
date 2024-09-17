@@ -18,6 +18,7 @@ public class SurveyDetailResponseDto {
     private Long surveyId;
     private String title;
     private String description;
+    private boolean isOngoing;
     private LocalDate createdAt;
     private LocalDate endDate;
     private List<QuestionDto> questions;
@@ -29,7 +30,7 @@ public class SurveyDetailResponseDto {
     public static class QuestionDto {
         private Long questionId;
         private String questionText;
-        private QuestionType questionType; // Updated to QuestionType enum
+        private QuestionType questionType;
         private List<ChoiceDto> choices;
 
         @Data
