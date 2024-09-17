@@ -17,7 +17,7 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
-    @GetMapping("/api/notices")
+    @GetMapping("/notices")
     public ResponseEntity<Map<String, Object>> getKwHomeNotices(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(required = false) String searchVal,
