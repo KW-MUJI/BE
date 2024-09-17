@@ -1,11 +1,9 @@
 package com.muji_backend.kw_muji.survey.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.muji_backend.kw_muji.common.entity.enums.QuestionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,8 +11,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class SurveyDetailResponseDto {
+public class MySurveyResultResponseDto {
 
     private Long surveyId;
     private String title;
@@ -25,25 +22,24 @@ public class SurveyDetailResponseDto {
 
     private LocalDate createdAt;
     private LocalDate endDate;
-    private List<QuestionDto> questions;
+    private List<SurveyDetailResponseDto.QuestionDto> questions;  // 질문 정보를 가져옴
+    private List<ResponseDto> responses;  // 응답 정보
 
     @Data
     @Builder
     @AllArgsConstructor
-    @NoArgsConstructor
-    public static class QuestionDto {
-        private Long questionId;
-        private String questionText;
-        private QuestionType questionType;
-        private List<ChoiceDto> choices;
+    public static class ResponseDto {
+        private Long responseId;
+        private List<AnswerDto> answers;
 
         @Data
         @Builder
         @AllArgsConstructor
-        @NoArgsConstructor
-        public static class ChoiceDto {
-            private Long choiceId;
-            private String choiceText;
+        public static class AnswerDto {
+            private Long questionId;
+            private String questionText;
+            private String questionType;
+            private String answerText;
         }
     }
 }
