@@ -1,5 +1,6 @@
 package com.muji_backend.kw_muji.survey.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.muji_backend.kw_muji.common.entity.enums.QuestionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,10 @@ public class SurveyDetailResponseDto {
     private Long surveyId;
     private String title;
     private String description;
+
+    @JsonProperty("isOngoing")
     private boolean isOngoing;
+
     private LocalDate createdAt;
     private LocalDate endDate;
     private List<QuestionDto> questions;
