@@ -39,4 +39,16 @@ public class MySurveyController {
             return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
         }
     }
+
+    @DeleteMapping("/{surveyId}")
+    public ResponseEntity<?> deleteSurvey(@PathVariable Long surveyId) {
+        try {
+            mySurveyService.deleteSurvey(surveyId);
+            return ResponseEntity.ok().body(Map.of("code", 200, "message", "설문조사 삭제 성공"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
+        }
+    }
 }
