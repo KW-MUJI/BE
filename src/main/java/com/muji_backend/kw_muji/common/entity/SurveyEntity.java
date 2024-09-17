@@ -26,6 +26,9 @@ public class SurveyEntity {
     @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
+    private Boolean isOngoing;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

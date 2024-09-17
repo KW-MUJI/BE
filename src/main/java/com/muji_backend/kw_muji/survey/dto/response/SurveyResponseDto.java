@@ -24,6 +24,7 @@ public class SurveyResponseDto {
         private Long surveyId;
         private String title;
         private String description;
+        private boolean isOngoing;
         private LocalDate createdAt;
         private LocalDate endDate;
     }
