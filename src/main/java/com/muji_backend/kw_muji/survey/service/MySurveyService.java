@@ -72,4 +72,15 @@ public class MySurveyService {
         return surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 설문조사를 찾을 수 없습니다: " + surveyId));
     }
+
+    /**
+     * 설문조사를 삭제하는 메서드
+     *
+     * @param surveyId 삭제할 설문의 ID
+     */
+    @Transactional
+    public void deleteSurvey(Long surveyId) {
+        SurveyEntity survey = getSurveyById(surveyId);
+        surveyRepository.delete(survey);
+    }
 }
