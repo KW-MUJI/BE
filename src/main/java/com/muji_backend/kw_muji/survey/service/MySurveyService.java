@@ -7,6 +7,7 @@ import com.muji_backend.kw_muji.survey.repository.SurveyRepository;
 import com.muji_backend.kw_muji.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,12 +29,14 @@ public class MySurveyService {
     public List<MySurveyResponseDto> getSurveysByUserId(Long userId) {
         UserEntity user = getUserById(userId);
 
-        List<SurveyEntity> userSurveys = surveyRepository.findByUsers(user);
+        List<SurveyEntity> surveys = surveyRepository.findByUsers(user);
 
-        return userSurveys.stream()
+        return surveys.stream()
                 .map(this::mapToMySurveyResponseDto)
                 .collect(Collectors.toList());
     }
+
+    // == Private Methods ==
 
     private UserEntity getUserById(Long userId) {
         return userRepository.findById(userId)
@@ -48,5 +51,36 @@ public class MySurveyService {
                 .isOngoing(survey.isOngoing())
                 .createdAt(survey.getCreatedAt().toLocalDate())
                 .build();
+    }
+
+    /**
+     * 설문조사를 종료하고 상태를 업데이트하는 메서드
+     *
+     * @param surveyId 종료할 설문의 ID
+     * @return 업데이트된 설문의 ID
+     */
+    @Transactional
+    public Long endSurvey(Long surveyId) {
+        SurveyEntity survey = getSurveyById(surveyId);
+        survey.setOngoing(false);
+        return surveyRepository.save(survey).getId();
+    }
+
+    // == Private Methods ==
+
+    private SurveyEntity getSurveyById(Long surveyId) {
+        return surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 설문조사를 찾을 수 없습니다: " + surveyId));
+    }
+
+    /**
+     * 설문조사를 삭제하는 메서드
+     *
+     * @param surveyId 삭제할 설문의 ID
+     */
+    @Transactional
+    public void deleteSurvey(Long surveyId) {
+        SurveyEntity survey = getSurveyById(surveyId);
+        surveyRepository.delete(survey);
     }
 }
