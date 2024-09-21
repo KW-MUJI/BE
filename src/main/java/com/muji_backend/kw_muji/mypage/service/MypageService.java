@@ -12,11 +12,15 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class MypageService {
-    private final UserRepository userRepo;
+    private final MypageRepository mypageRepo;
 
     public Boolean equalPassword(final String email, final String password, final PasswordEncoder encoder) {
-        final UserEntity user = userRepo.findByEmail(email);
+        final UserEntity user = mypageRepo.findByEmail(email);
 
         return user != null && encoder.matches(password, user.getPassword());
+    }
+
+    public UserEntity originalUser(final String email) {
+        return mypageRepo.findByEmail(email);
     }
 }
