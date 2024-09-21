@@ -2,14 +2,16 @@ package com.muji_backend.kw_muji.user.controller;
 
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.security.TokenProvider;
-import com.muji_backend.kw_muji.user.dto.SignInDTO;
-import com.muji_backend.kw_muji.user.dto.SignUpDTO;
+import com.muji_backend.kw_muji.user.dto.Request.SignInDTO;
+import com.muji_backend.kw_muji.user.dto.Request.SignUpDTO;
+import com.muji_backend.kw_muji.user.dto.Response.TokenDTO;
 import com.muji_backend.kw_muji.user.service.MailSendService;
 import com.muji_backend.kw_muji.user.service.RedisService;
 import com.muji_backend.kw_muji.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
 import org.springframework.http.ResponseEntity;
-import com.muji_backend.kw_muji.user.dto.EmailDTO;
+import com.muji_backend.kw_muji.user.dto.Request.EmailDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -121,10 +123,13 @@ public class UserController {
 
             final String accessToken = tokenProvider.createAccessToken(user);
             final String refreshToken = tokenProvider.createRefreshToken(user);
-            log.info("accessToken value: {}", accessToken);
-            log.info("refreshToken value: {}", refreshToken);
 
-            return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+            final TokenDTO resDTO = TokenDTO.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", resDTO));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
