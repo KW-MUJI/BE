@@ -1,4 +1,4 @@
-package com.muji_backend.kw_muji.user.dto;
+package com.muji_backend.kw_muji.user.dto.Request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
