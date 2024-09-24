@@ -32,6 +32,11 @@ public class SurveySubmitService {
      * @return 저장된 응답 ID
      */
     public Long submitSurvey(Long userId, Long surveyId, SurveySubmitRequestDto requestDto) {
+        // 이미 설문에 응답한 경우
+        if (responseRepository.existsByUsersIdAndSurveyId(userId, surveyId)) {
+            throw new IllegalStateException("이미 설문에 참여한 유저입니다.: " + userId);
+        }
+
         // 설문과 사용자 정보를 가져옴
         SurveyEntity survey = findSurveyById(surveyId);
         UserEntity user = findUserById(userId);

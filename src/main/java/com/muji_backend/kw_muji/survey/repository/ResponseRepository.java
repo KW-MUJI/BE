@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ResponseRepository extends JpaRepository<ResponseEntity, Long> {
     List<ResponseEntity> findBySurveyId(Long surveyId);
+    boolean existsByUsersIdAndSurveyId(Long userId, Long surveyId);
 }
