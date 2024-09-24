@@ -1,17 +1,15 @@
 package com.muji_backend.kw_muji.user.controller;
 
 import com.muji_backend.kw_muji.common.entity.UserEntity;
+import com.muji_backend.kw_muji.common.entity.enums.UserRole;
 import com.muji_backend.kw_muji.common.security.TokenProvider;
-import com.muji_backend.kw_muji.user.dto.Request.SignInDTO;
-import com.muji_backend.kw_muji.user.dto.Request.SignUpDTO;
-import com.muji_backend.kw_muji.user.dto.Response.TokenDTO;
+import com.muji_backend.kw_muji.user.dto.request.*;
+import com.muji_backend.kw_muji.user.dto.response.TokenDTO;
 import com.muji_backend.kw_muji.user.service.MailSendService;
 import com.muji_backend.kw_muji.user.service.RedisService;
 import com.muji_backend.kw_muji.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.Token;
 import org.springframework.http.ResponseEntity;
-import com.muji_backend.kw_muji.user.dto.Request.EmailDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,7 +36,7 @@ public class UserController {
     private final PasswordEncoder pwEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/signUp")
-    public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpDTO dto, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpRequestDTO dto, BindingResult bindingResult) {
         try {
             // 유저 유효성 검사
             userService.validation(bindingResult, "name");
@@ -62,6 +60,7 @@ public class UserController {
                     .major(dto.getMajor())
                     .email(dto.getEmail())
                     .password(pwEncoder.encode(dto.getPassword()))
+                    .role(UserRole.USER) // 기본으로 USER 설정
                     .build();
 
             userService.createUser(user);
@@ -76,7 +75,7 @@ public class UserController {
     }
 
     @PostMapping("/mailSend")
-    public ResponseEntity<Map<String, Object>> mailSend(@RequestBody @Valid EmailDTO dto, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> mailSend(@RequestBody @Valid EmailRequestDTO dto, BindingResult bindingResult) {
         try {
             if (dto.getFlag()) { // 회원가입
                 userService.validation(bindingResult, "email");
@@ -97,7 +96,7 @@ public class UserController {
     }
 
     @PostMapping("/authCheck")
-    public ResponseEntity<Map<String, Object>> authCheck(@RequestBody @Valid EmailDTO dto) {
+    public ResponseEntity<Map<String, Object>> authCheck(@RequestBody @Valid AuthNumRequestDTO dto) {
         try {
             if (!mailSendService.CheckAuthNum(dto.getEmail(), dto.getAuthNum()))
                 throw new IllegalArgumentException("인증번호가 일치하지 않음");
@@ -111,7 +110,7 @@ public class UserController {
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<Map<String, Object>> signIn(@RequestBody @Valid SignInDTO dto, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> signIn(@RequestBody @Valid SignInRequestDTO dto, BindingResult bindingResult) {
         try {
             userService.validation(bindingResult, "email");
 
@@ -138,7 +137,7 @@ public class UserController {
     }
 
     @PostMapping("/findPw")
-    public ResponseEntity<Map<String, Object>> findPassword(@RequestBody EmailDTO dto) {
+    public ResponseEntity<Map<String, Object>> findPassword(@RequestBody AuthNumRequestDTO dto) {
         try {
             // 인증번호 확인
             if (!mailSendService.CheckAuthNum(dto.getEmail(), dto.getAuthNum()))
@@ -154,7 +153,7 @@ public class UserController {
     }
 
     @PostMapping("/resetPw")
-    public ResponseEntity<Map<String, Object>> resetPassword(@AuthenticationPrincipal UserEntity userInfo, @RequestBody @Valid SignInDTO dto, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> resetPassword(@AuthenticationPrincipal UserEntity userInfo, @RequestBody @Valid ResetPWRequestDTO dto, BindingResult bindingResult) {
         try {
             userService.validation(bindingResult, "password");
 
