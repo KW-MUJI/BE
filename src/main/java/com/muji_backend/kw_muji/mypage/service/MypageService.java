@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -25,10 +28,27 @@ public class MypageService {
         return mypageRepo.findByEmail(email);
     }
 
-//    @Transactional
-//    public UserEntity updateUser(final UserEntity userEntity) {
-//        final UserEntity user = originalUser(userEntity.getEmail());
-//
-//
-//    }
+    @Transactional
+    public UserEntity updateUser(final UserEntity userEntity) {
+        final UserEntity user = originalUser(userEntity.getEmail());
+
+        if(userEntity.getName() != null && !userEntity.getName().isBlank())
+            user.setName(userEntity.getName());
+
+        if(userEntity.getStuNum() > 0 )
+            user.setStuNum(userEntity.getStuNum());
+
+        if(userEntity.getMajor() != null && !userEntity.getMajor().isBlank())
+            user.setMajor(userEntity.getMajor());
+
+        if(userEntity.getPassword() != null && !userEntity.getPassword().isBlank())
+            user.setPassword(userEntity.getPassword());
+
+        return mypageRepo.save(user);
+    }
+
+    public void validation(BindingResult bindingResult, String fieldName) {
+        if (bindingResult.hasFieldErrors(fieldName))
+            throw new IllegalArgumentException(Objects.requireNonNull(bindingResult.getFieldError(fieldName)).getDefaultMessage());
+    }
 }
