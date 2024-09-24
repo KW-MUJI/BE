@@ -69,6 +69,8 @@ public class SurveyController {
         try {
             Long responseId = surveySubmitService.submitSurvey(userInfo.getId(), surveyId, requestDto);
             return ResponseEntity.ok().body(Map.of("code", 200, "responseId", responseId));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(Map.of("code", 409, "message", e.getMessage()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
         } catch (Exception e) {
