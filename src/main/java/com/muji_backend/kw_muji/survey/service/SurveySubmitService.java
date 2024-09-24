@@ -31,10 +31,10 @@ public class SurveySubmitService {
      * @param requestDto 설문 응답 데이터
      * @return 저장된 응답 ID
      */
-    public Long submitSurvey(Long surveyId, SurveySubmitRequestDto requestDto) {
+    public Long submitSurvey(Long userId, Long surveyId, SurveySubmitRequestDto requestDto) {
         // 설문과 사용자 정보를 가져옴
         SurveyEntity survey = findSurveyById(surveyId);
-        UserEntity user = findUserById(requestDto.getUserId());
+        UserEntity user = findUserById(userId);
 
         // 응답을 저장
         ResponseEntity response = createAndSaveResponse(survey, user);

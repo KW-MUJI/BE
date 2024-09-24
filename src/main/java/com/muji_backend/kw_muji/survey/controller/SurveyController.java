@@ -63,10 +63,11 @@ public class SurveyController {
 
     @PostMapping("/submit/{surveyId}")
     public ResponseEntity<?> submitSurvey(
+            @AuthenticationPrincipal UserEntity userInfo,
             @PathVariable Long surveyId,
             @RequestBody SurveySubmitRequestDto requestDto) {
         try {
-            Long responseId = surveySubmitService.submitSurvey(surveyId, requestDto);
+            Long responseId = surveySubmitService.submitSurvey(userInfo.getId(), surveyId, requestDto);
             return ResponseEntity.ok().body(Map.of("code", 200, "responseId", responseId));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
