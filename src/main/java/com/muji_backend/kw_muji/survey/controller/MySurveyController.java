@@ -1,10 +1,12 @@
 package com.muji_backend.kw_muji.survey.controller;
 
+import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.survey.dto.response.MySurveyResponseDto;
 import com.muji_backend.kw_muji.survey.dto.response.MySurveyResultResponseDto;
 import com.muji_backend.kw_muji.survey.service.MySurveyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,10 +19,10 @@ public class MySurveyController {
 
     private final MySurveyService mySurveyService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getMySurveys(@PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<?> getMySurveys(@AuthenticationPrincipal UserEntity userInfo) {
         try {
-            List<MySurveyResponseDto> surveys = mySurveyService.getSurveysByUserId(userId);
+            List<MySurveyResponseDto> surveys = mySurveyService.getSurveysByUserId(userInfo.getId());
             return ResponseEntity.ok().body(Map.of("code", 200, "data", surveys));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));

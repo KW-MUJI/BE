@@ -31,10 +31,19 @@ public class SurveySubmitService {
      * @param requestDto 설문 응답 데이터
      * @return 저장된 응답 ID
      */
-    public Long submitSurvey(Long surveyId, SurveySubmitRequestDto requestDto) {
+    public Long submitSurvey(Long userId, Long surveyId, SurveySubmitRequestDto requestDto) {
+        // 이미 설문에 응답한 경우
+        if (responseRepository.existsByUsersIdAndSurveyId(userId, surveyId)) {
+            throw new IllegalStateException("이미 설문에 참여한 유저입니다.: " + userId);
+        }
+
         // 설문과 사용자 정보를 가져옴
         SurveyEntity survey = findSurveyById(surveyId);
-        UserEntity user = findUserById(requestDto.getUserId());
+        UserEntity user = findUserById(userId);
+
+        if (!survey.isOngoing()) {
+            throw new IllegalStateException("설문 기간이 종료된 설문입니다.: " + surveyId);
+        }
 
         // 응답을 저장
         ResponseEntity response = createAndSaveResponse(survey, user);
