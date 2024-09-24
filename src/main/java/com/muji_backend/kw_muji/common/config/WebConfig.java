@@ -26,6 +26,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final String[] swaggerPath = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/error"};
 
     @Bean // 이 메소드가 생성하는 객체를 스프링이 관리
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,6 +39,7 @@ public class WebConfig implements WebMvcConfigurer {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/auth/**").permitAll() // 인증 없이 접근 가능한 경로 설정
+                        .requestMatchers(swaggerPath).permitAll() // 스웨거 경로 설정
                         .anyRequest().authenticated()) // 나머지 모든 요청은 인증 필요
                 .requiresChannel(channelConfigurer -> channelConfigurer
                         .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
