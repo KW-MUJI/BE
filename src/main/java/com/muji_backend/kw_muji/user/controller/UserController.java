@@ -70,7 +70,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원가입. 잠시 후 다시 시도해주세요."));
+            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원가입 오류. 잠시 후 다시 시도해주세요."));
         }
     }
 
@@ -108,7 +108,6 @@ public class UserController {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "인증번호 확인 오류. 잠시 후 다시 시도해주세요."));
         }
     }
-
     @PostMapping("/signIn")
     public ResponseEntity<Map<String, Object>> signIn(@RequestBody @Valid SignInRequestDTO dto, BindingResult bindingResult) {
         try {

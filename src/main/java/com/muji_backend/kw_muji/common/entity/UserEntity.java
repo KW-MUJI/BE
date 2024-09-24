@@ -38,6 +38,9 @@ public class UserEntity {
     @Column(nullable = false)
     private UserRole role = UserRole.USER; // deafult 값: USER
 
+    @Column
+    private String image;
+
     // users : univCalendar = 1 : N
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UnivCalendarEntity> univCalendar = new ArrayList<>();
