@@ -3,6 +3,7 @@ package com.muji_backend.kw_muji.mypage.service;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.mypage.repository.MypageRepository;
 import com.muji_backend.kw_muji.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,4 +24,11 @@ public class MypageService {
     public UserEntity originalUser(final String email) {
         return mypageRepo.findByEmail(email);
     }
+
+//    @Transactional
+//    public UserEntity updateUser(final UserEntity userEntity) {
+//        final UserEntity user = originalUser(userEntity.getEmail());
+//
+//
+//    }
 }

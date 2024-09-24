@@ -3,6 +3,7 @@ package com.muji_backend.kw_muji.common.entity;
 import com.muji_backend.kw_muji.common.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
