@@ -1,4 +1,4 @@
-package com.muji_backend.kw_muji.user.dto.Response;
+package com.muji_backend.kw_muji.user.dto.response;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

@@ -3,6 +3,7 @@ package com.muji_backend.kw_muji.common.entity;
 import com.muji_backend.kw_muji.common.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role;
+    private UserRole role = UserRole.USER; // deafult 값: USER
 
     // users : univCalendar = 1 : N
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,5 +1,6 @@
-package com.muji_backend.kw_muji.user.dto.Request;
+package com.muji_backend.kw_muji.user.dto.request;
 
+import com.muji_backend.kw_muji.common.entity.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignUpDTO {
+public class SignUpRequestDTO {
     @NotEmpty(message = "이름을 입력해 주세요")
     private String name;
 
@@ -37,8 +38,4 @@ public class SignUpDTO {
 
     @NotEmpty(message = "비밀번호 확인을 입력해 주세요")
     private String confirmPassword;
-
-    private String accessToken;
-
-    private String refreshToken;
 }
