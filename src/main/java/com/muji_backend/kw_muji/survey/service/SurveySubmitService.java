@@ -41,6 +41,10 @@ public class SurveySubmitService {
         SurveyEntity survey = findSurveyById(surveyId);
         UserEntity user = findUserById(userId);
 
+        if (!survey.isOngoing()) {
+            throw new IllegalStateException("설문 기간이 종료된 설문입니다.: " + surveyId);
+        }
+
         // 응답을 저장
         ResponseEntity response = createAndSaveResponse(survey, user);
 
