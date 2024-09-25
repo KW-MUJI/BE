@@ -24,7 +24,7 @@ public class CalendarController {
     public ResponseEntity<?> getCalendar(@AuthenticationPrincipal UserEntity userInfo,
                                          @PathVariable String yearMonth) {
         try {
-            CalendarResponseDto response = calendarService.getCalendarEvents(userInfo.getId(), yearMonth);
+            CalendarResponseDto response = calendarService.getCalendarEvents(userInfo, yearMonth);
             return ResponseEntity.ok().body(Map.of("code", 200, "data", response));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
