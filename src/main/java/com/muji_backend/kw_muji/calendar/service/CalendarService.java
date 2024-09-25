@@ -1,5 +1,6 @@
 package com.muji_backend.kw_muji.calendar.service;
 
+import com.muji_backend.kw_muji.calendar.dto.request.CalendarRequestDto;
 import com.muji_backend.kw_muji.calendar.dto.response.CalendarResponseDto;
 import com.muji_backend.kw_muji.calendar.repository.ParticipationRepository;
 import com.muji_backend.kw_muji.calendar.repository.UnivCalendarRepository;
@@ -73,9 +74,15 @@ public class CalendarService {
                 .build();
     }
 
+    // == Private Methods ==
+
     // 결과가 null인 경우 빈 리스트 반환
     private <T> List<T> safeList(Supplier<List<T>> queryFunction) {
         List<T> result = queryFunction.get();
         return result != null ? result : Collections.emptyList();
+    }
+
+    public Long addCalendarEvent(UserEntity userInfo, CalendarRequestDto requestDto) {
+
     }
 }
