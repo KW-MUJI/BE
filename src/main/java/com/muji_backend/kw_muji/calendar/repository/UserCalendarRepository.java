@@ -14,6 +14,6 @@ public interface UserCalendarRepository extends JpaRepository<UserCalendarEntity
     // 개인 일정 조회 (projectId가 null인 경우)
     List<UserCalendarEntity> findAllByUsersAndProjectIsNullAndEventDateBetween(UserEntity user, LocalDateTime startDate, LocalDateTime endDate);
 
-    // 프로젝트 일정 조회 (projectId가 존재하는 경우)
-    List<UserCalendarEntity> findAllByProjectAndEventDateBetween(ProjectEntity project, LocalDateTime startDate, LocalDateTime endDate);
+    // 프로젝트 일정 조회 (projectId가 있는 경우 / 프로젝트 리스트와 날짜 범위에 따라 일정 조회)
+    List<UserCalendarEntity> findAllByProjectInAndEventDateBetween(List<ProjectEntity> projects, LocalDateTime startDate, LocalDateTime endDate);
 }
