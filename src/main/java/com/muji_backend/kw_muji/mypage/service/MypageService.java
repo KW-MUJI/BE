@@ -1,6 +1,7 @@
 package com.muji_backend.kw_muji.mypage.service;
 
 import com.muji_backend.kw_muji.common.entity.UserEntity;
+import com.muji_backend.kw_muji.mypage.dto.request.UpdateRequestDTO;
 import com.muji_backend.kw_muji.mypage.repository.MypageRepository;
 import com.muji_backend.kw_muji.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -29,20 +30,20 @@ public class MypageService {
     }
 
     @Transactional
-    public UserEntity updateUser(final UserEntity userEntity) {
+    public UserEntity updateUser(final UserEntity userEntity, final UpdateRequestDTO dto) {
         final UserEntity user = originalUser(userEntity.getEmail());
 
-        if(userEntity.getName() != null && !userEntity.getName().isBlank())
-            user.setName(userEntity.getName());
+        if(dto.getName() != null && !dto.getName().isBlank())
+            user.setName(dto.getName());
 
-        if(userEntity.getStuNum() > 0 )
+        if(dto.getStuNum() > 0)
             user.setStuNum(userEntity.getStuNum());
 
-        if(userEntity.getMajor() != null && !userEntity.getMajor().isBlank())
-            user.setMajor(userEntity.getMajor());
+        if(dto.getMajor() != null && !dto.getMajor().isBlank())
+            user.setMajor(dto.getMajor());
 
-        if(userEntity.getPassword() != null && !userEntity.getPassword().isBlank())
-            user.setPassword(userEntity.getPassword());
+        if(dto.getPassword() != null && !dto.getPassword().isBlank())
+            user.setPassword(dto.getPassword());
 
         return mypageRepo.save(user);
     }
