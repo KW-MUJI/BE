@@ -3,6 +3,7 @@ package com.muji_backend.kw_muji.calendar.service;
 import com.muji_backend.kw_muji.calendar.dto.request.CalendarRequestDto;
 import com.muji_backend.kw_muji.calendar.dto.response.CalendarResponseDto;
 import com.muji_backend.kw_muji.calendar.repository.ParticipationRepository;
+import com.muji_backend.kw_muji.calendar.repository.ProjectRepository;
 import com.muji_backend.kw_muji.calendar.repository.UnivCalendarRepository;
 import com.muji_backend.kw_muji.calendar.repository.UserCalendarRepository;
 import com.muji_backend.kw_muji.common.entity.*;
@@ -25,7 +26,15 @@ public class CalendarService {
     private final UnivCalendarRepository univCalendarRepository;
     private final UserCalendarRepository userCalendarRepository;
     private final ParticipationRepository participationRepository;
+    private final ProjectRepository projectRepository;
 
+    /**
+     * 참여 팀플, 대학, 개인, 그리고 참여 중인 프로젝트 일정을 조회하는 메서드
+     *
+     * @param userInfo   현재 인증된 사용자 정보
+     * @param yearMonth  조회할 연도-월 (yyyy-MM 형식)
+     * @return CalendarResponseDto 참여중인 팀플, 대학 일정, 개인 일정, 프로젝트 일정 데이터를 포함한 응답 DTO
+     */
     public CalendarResponseDto getCalendarEvents(UserEntity userInfo, String yearMonth) {
         if (userInfo == null) {
             throw new IllegalArgumentException("유저 정보가 필요합니다.");
@@ -82,7 +91,37 @@ public class CalendarService {
         return result != null ? result : Collections.emptyList();
     }
 
+    /**
+     * 개인 일정 또는 프로젝트 일정을 생성하는 메서드.
+     * 프로젝트 ID가 null인 경우 개인 일정으로 처리
+     * 프로젝트 ID가 있을 경우 해당 프로젝트의 일정으로 처리한
+     *
+     * @param userInfo   현재 인증된 사용자 정보
+     * @param requestDto 일정 생성에 필요한 데이터 (제목, 날짜, 프로젝트 ID 등)
+     * @return 생성된 일정의 ID
+     */
     public Long addCalendarEvent(UserEntity userInfo, CalendarRequestDto requestDto) {
+        if (userInfo == null) {
+            throw new IllegalArgumentException("유저 정보가 필요합니다.");
+        }
 
+        // 프로젝트가 있는지 확인 (null이면 개인 일정)
+        ProjectEntity project = null;
+        if (requestDto.getProjectId() != null) {
+            project = projectRepository.findById(requestDto.getProjectId())
+                    .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트를 조회할 수 없습니다. projectId: " + requestDto.getProjectId()));
+        }
+
+        // 일정 생성
+        UserCalendarEntity calendarEntity = UserCalendarEntity.builder()
+                .users(userInfo)
+                .project(project)
+                .title(requestDto.getTitle())
+                .eventDate(requestDto.getEventDate())
+                .build();
+
+        UserCalendarEntity savedEvent = userCalendarRepository.save(calendarEntity);
+
+        return savedEvent.getId();
     }
 }
