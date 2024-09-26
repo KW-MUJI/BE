@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class CalendarRequestDto {
-    private Long userId;
     private Long projectId;           // 프로젝트 ID (null이면 개인 일정)
     private String title;
     private LocalDateTime eventDate;
