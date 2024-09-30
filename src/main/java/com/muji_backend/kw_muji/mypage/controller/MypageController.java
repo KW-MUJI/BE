@@ -77,6 +77,9 @@ public class MypageController {
             if (!dto.getPassword().equals(dto.getConfirmPassword()))
                 throw new IllegalArgumentException("비밀번호가 일치하지 않음");
 
+            if(!dto.getPassword().isBlank())
+                userInfo.setPassword(pwdEncoder.encode(dto.getPassword()));
+
             final UserEntity updateUser = mypageService.updateUser(userInfo, dto);
 
             final TokenDTO resDTO = TokenDTO.builder()

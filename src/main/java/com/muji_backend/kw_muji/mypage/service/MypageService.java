@@ -42,8 +42,8 @@ public class MypageService {
         if(dto.getMajor() != null && !dto.getMajor().isBlank())
             user.setMajor(dto.getMajor());
 
-        if(dto.getPassword() != null && !dto.getPassword().isBlank())
-            user.setPassword(dto.getPassword());
+        if(userEntity.getPassword() != null && !userEntity.getPassword().isBlank())
+            user.setPassword(userEntity.getPassword());
 
         return mypageRepo.save(user);
     }
