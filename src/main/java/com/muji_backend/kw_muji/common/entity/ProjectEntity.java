@@ -26,7 +26,6 @@ public class ProjectEntity {
     @Column(nullable = false)
     private String description;
 
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProjectType projectType;
