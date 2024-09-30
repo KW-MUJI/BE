@@ -114,4 +114,11 @@ public class MypageService {
 
         return S3Key;
     }
+
+    @Transactional
+    public void deleteUser(final UserEntity user) {
+        deleteUserImage(user.getEmail());
+
+        mypageRepo.delete(user);
+    }
 }
