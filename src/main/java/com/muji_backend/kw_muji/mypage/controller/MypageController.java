@@ -105,4 +105,19 @@ public class MypageController {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원정보 수정 오류. 잠시 후 다시 시도해주세요."));
         }
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Map<String, Object>> deleteUser(@AuthenticationPrincipal UserEntity userInfo) {
+        try {
+            final UserEntity user = mypageService.originalUser(userInfo.getEmail());
+
+            mypageService.deleteUser(user);
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", user.getName() + "의 계정 삭제"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원 탈퇴 오류. 잠시 후 다시 시도해주세요."));
+        }
+    }
 }
