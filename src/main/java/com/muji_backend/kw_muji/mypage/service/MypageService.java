@@ -63,8 +63,10 @@ public class MypageService {
         if(userEntity.getPassword() != null && !userEntity.getPassword().isBlank())
             user.setPassword(userEntity.getPassword());
 
-        if(userEntity.getImage() != null && !userEntity.getImage().isBlank())
+        if(!dto.isDeleteImage() && userEntity.getImage() != null && !userEntity.getImage().isBlank())
             user.setImage(userEntity.getImage());
+        else if(dto.isDeleteImage())
+            user.setImage(null);
 
         return mypageRepo.save(user);
     }
@@ -78,20 +80,17 @@ public class MypageService {
         if(mypageRepo.findByEmail(email).getImage() != null) {
             final String formalS3Key = mypageRepo.findByEmail(email).getImage();
 
-            if(amazonS3.doesObjectExist(bucket, formalS3Key)) {
+            if(amazonS3.doesObjectExist(bucket, formalS3Key))
                 amazonS3.deleteObject(bucket, formalS3Key);
-            }
         }
     }
 
     public String uploadUserImage(final MultipartFile[] files, final String userName, final String email) throws IOException {
-        if(files.length > 1) {
+        if(files.length > 1)
             throw new IllegalArgumentException("프로필 이미지가 1개를 초과함");
-        }
 
-        if(!Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/jpeg")) {
+        if(!Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/jpeg"))
             throw new IllegalArgumentException("프로필 이미지의 타입이 jpg가 아님");
-        }
 
         // 파일 이름 가공
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

@@ -10,6 +10,7 @@ import com.muji_backend.kw_muji.mypage.service.MypageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 @RestController
@@ -30,6 +33,9 @@ public class MypageController {
     private final TokenProvider tokenProvider;
 
     private final PasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
+
+    @Value("${cloud.aws.s3.url}")
+    private String bucketURL;
 
     @PostMapping("/checkPw")
     public ResponseEntity<Map<String, Object>> enterUpdate(@AuthenticationPrincipal UserEntity userInfo, @RequestBody PasswordRequestDTO dto) {
@@ -52,7 +58,7 @@ public class MypageController {
             final UserEntity user = mypageService.originalUser(userInfo.getEmail());
 
             final UserInfoResponseDTO resDTO = UserInfoResponseDTO.builder()
-                    .image(user.getImage())
+                    .image(user.getImage() != null ? bucketURL + URLEncoder.encode(user.getImage(), "UTF-8") : "")
                     .email(user.getEmail())
                     .name(user.getName())
                     .stuNum(user.getStuNum())
@@ -60,7 +66,7 @@ public class MypageController {
                     .build();
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", resDTO));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원정보 로딩 오류. 잠시 후 다시 시도해주세요."));
@@ -83,14 +89,11 @@ public class MypageController {
             if (!dto.getPassword().isBlank())
                 userInfo.setPassword(pwdEncoder.encode(dto.getPassword()));
 
-            String userImageFilePath;
             if(file != null && file.length > 0 && !file[0].isEmpty()) {
-                userImageFilePath = mypageService.uploadUserImage(file, dto.getName(), userInfo.getEmail());
-            } else {
-                userImageFilePath = userInfo.getImage();
+                userInfo.setImage(mypageService.uploadUserImage(file, dto.getName(), userInfo.getEmail()));
+            } else if (dto.isDeleteImage()){ // 프로필 사진 삭제를 요청한 경우
+                mypageService.deleteUserImage(userInfo.getEmail());
             }
-
-            userInfo.setImage(userImageFilePath);
 
             final UserEntity updateUser = mypageService.updateUser(userInfo, dto);
 
