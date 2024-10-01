@@ -2,6 +2,7 @@ package com.muji_backend.kw_muji.common.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -36,6 +37,10 @@ public class ProjectEntity {
 
     @Column
     private String image;
+
+    @Column(nullable = false)
+    @ColumnDefault("true")
+    private boolean isOnGoing;
 
     @PrePersist // entity가 영속화되기 직전에 실행
     protected void onCreate() {

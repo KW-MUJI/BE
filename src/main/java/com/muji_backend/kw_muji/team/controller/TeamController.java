@@ -5,20 +5,20 @@ import com.muji_backend.kw_muji.common.entity.ProjectEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.team.dto.request.RegisterRequestDTO;
+import com.muji_backend.kw_muji.team.dto.response.ProjectResponseDTO;
 import com.muji_backend.kw_muji.team.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -28,6 +28,9 @@ import java.util.Map;
 @RequestMapping("/team")
 public class TeamController {
     private final TeamService teamService;
+
+    @Value("${cloud.aws.s3.url}")
+    private String bucketURL;
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> writeProject(@AuthenticationPrincipal UserEntity userInfo, @Valid RegisterRequestDTO dto, @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
@@ -63,6 +66,29 @@ public class TeamController {
             return org.springframework.http.ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "팀플 모집 글쓰기 오류. 잠시 후 다시 시도해주세요."));
+        }
+    }
+
+    @GetMapping("/{projectId}")
+    public ResponseEntity<Map<String, Object>> getProject(@AuthenticationPrincipal UserEntity userInfo, @PathVariable Long projectId) {
+        try {
+            final ProjectEntity project = teamService.getProject(projectId);
+
+            final ProjectResponseDTO resDTO = ProjectResponseDTO.builder()
+                    .name(project.getName())
+                    .description(project.getDescription())
+                    .createdAt(project.getCreatedAt())
+                    .deadLineAt(project.getDeadlineAt())
+                    .image(project.getImage() != null ? bucketURL + URLEncoder.encode(project.getImage(), "UTF-8") : "")
+                    .role(teamService.getRole(projectId, userInfo) == null ? ProjectRole.valueOf("NONE") : teamService.getRole(projectId, userInfo).getRole())
+                    .isOnGoing(project.isOnGoing())
+                    .build();
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", resDTO));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
         }
     }
 }
