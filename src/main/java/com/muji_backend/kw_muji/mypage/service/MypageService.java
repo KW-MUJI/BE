@@ -2,9 +2,11 @@ package com.muji_backend.kw_muji.mypage.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.muji_backend.kw_muji.common.entity.ResumeEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.mypage.dto.request.UpdateRequestDTO;
 import com.muji_backend.kw_muji.mypage.repository.MypageRepository;
+import com.muji_backend.kw_muji.mypage.repository.ResumeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -112,7 +114,6 @@ public class MypageService {
     @Transactional
     public void deleteUser(final UserEntity user) {
         deleteUserImage(user.getEmail());
-
         mypageRepo.delete(user);
     }
 }
