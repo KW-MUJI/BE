@@ -1,8 +1,9 @@
-package com.muji_backend.kw_muji.project.service;
+package com.muji_backend.kw_muji.team.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.muji_backend.kw_muji.project.repository.ProjectRepository;
+import com.muji_backend.kw_muji.common.entity.ProjectEntity;
+import com.muji_backend.kw_muji.team.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +19,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class ProjectService {
-    private final ProjectRepository projectRepo;
+public class TeamService {
+    private final TeamRepository projectRepo;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -33,6 +34,7 @@ public class ProjectService {
             throw new IllegalArgumentException(Objects.requireNonNull(bindingResult.getFieldError(fieldName)).getDefaultMessage());
     }
 
+    // 팀 프로젝트 글 수정 시, 사용하기
 //    public void deleteProjectImage(final String email) {
 //        if(projectRepo.findByEmail(email).getImage() != null) {
 //            final String formalS3Key = mypageRepo.findByEmail(email).getImage();
@@ -43,13 +45,13 @@ public class ProjectService {
 //        }
 //    }
 
-    public String uploadProjectImage(final MultipartFile[] files, final String title, final String email) throws IOException {
+    public String uploadProjectImage(final MultipartFile[] files, final String title) throws IOException {
         if(files.length > 1) {
-            throw new IllegalArgumentException("프로필 이미지가 1개를 초과함");
+            throw new IllegalArgumentException("프로젝트 이미지가 1개를 초과함");
         }
 
         if(!Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/jpeg")) {
-            throw new IllegalArgumentException("프로필 이미지의 타입이 jpg가 아님");
+            throw new IllegalArgumentException("프로젝트 이미지의 타입이 jpg가 아님");
         }
 
         // 파일 이름 가공
@@ -65,12 +67,13 @@ public class ProjectService {
         metadata.setContentLength(files[0].getSize());
         metadata.setContentType(files[0].getContentType());
 
-        // 기존 파일 삭제 - 편집 없을 경우 없어도 됨
-//        deleteProjectImage(email);
-
         // 저장
         amazonS3.putObject(bucket, S3Key, files[0].getInputStream(), metadata);
 
         return S3Key;
+    }
+
+    public void registerProject(ProjectEntity entity) {
+        projectRepo.save(entity);
     }
 }

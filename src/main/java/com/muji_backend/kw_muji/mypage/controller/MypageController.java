@@ -7,6 +7,7 @@ import com.muji_backend.kw_muji.mypage.dto.request.UpdateRequestDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.TokenDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.UserInfoResponseDTO;
 import com.muji_backend.kw_muji.mypage.service.MypageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +68,7 @@ public class MypageController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateUserInfo(@AuthenticationPrincipal UserEntity userInfo, UpdateRequestDTO dto, @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> updateUserInfo(@AuthenticationPrincipal UserEntity userInfo, @Valid UpdateRequestDTO dto, @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
         try {
             // 유효성 검사
             mypageService.validation(bindingResult, "name");
