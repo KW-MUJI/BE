@@ -24,7 +24,7 @@ import java.util.Objects;
 @Service
 public class TeamService {
     private final TeamRepository projectRepo;
-    private final RoleRepository participationRepo;
+    private final RoleRepository roleRepo;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -91,6 +91,6 @@ public class TeamService {
     }
 
     public ParticipationEntity getRole(final Long projectId, final UserEntity user) {
-        return participationRepo.findByProjectIdAndUsers(projectId, user);
+        return roleRepo.findByProjectIdAndUsers(projectId, user);
     }
 }
