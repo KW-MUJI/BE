@@ -1,6 +1,5 @@
 package com.muji_backend.kw_muji.common.entity;
 
-import com.muji_backend.kw_muji.common.entity.enums.ProjectType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,11 +25,6 @@ public class ProjectEntity {
     @Column(nullable = false)
     private String description;
 
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ProjectType projectType;
-
     @Column(nullable = false)
     private boolean start;
 
@@ -39,6 +33,9 @@ public class ProjectEntity {
 
     @Column(nullable = false)
     private LocalDateTime deadlineAt;
+
+    @Column
+    private String image;
 
     @PrePersist // entity가 영속화되기 직전에 실행
     protected void onCreate() {
