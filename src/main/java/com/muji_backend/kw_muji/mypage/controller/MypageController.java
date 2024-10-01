@@ -1,5 +1,6 @@
 package com.muji_backend.kw_muji.mypage.controller;
 
+import com.muji_backend.kw_muji.common.entity.ResumeEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.security.TokenProvider;
 import com.muji_backend.kw_muji.mypage.dto.request.PasswordRequestDTO;
@@ -119,6 +120,25 @@ public class MypageController {
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", user.getName() + "의 계정 삭제"));
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원 탈퇴 오류. 잠시 후 다시 시도해주세요."));
+        }
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<Map<String, Object>> registerResume(@AuthenticationPrincipal UserEntity userInfo, @RequestParam(value = "resume", required = false) MultipartFile[] file) {
+        try {
+            final ResumeEntity resume = new ResumeEntity();
+            final UserEntity user = mypageService.originalUser(userInfo.getEmail());
+
+            resume.setUsers(user);
+            resume.setResumePath(mypageService.uploadResume(file, user.getName(), resume)); // 파일명, 파일 주소 모두 저장
+
+            mypageService.saveResume(resume);
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+        } catch (IllegalArgumentException | IOException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원 탈퇴 오류. 잠시 후 다시 시도해주세요."));
