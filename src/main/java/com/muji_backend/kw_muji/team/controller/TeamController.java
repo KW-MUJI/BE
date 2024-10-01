@@ -6,6 +6,7 @@ import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.team.dto.request.RegisterRequestDTO;
 import com.muji_backend.kw_muji.team.dto.response.ProjectResponseDTO;
+import com.muji_backend.kw_muji.team.dto.response.ResumeListResponseDTO;
 import com.muji_backend.kw_muji.team.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,23 @@ public class TeamController {
                     .image(project.getImage() != null ? bucketURL + URLEncoder.encode(project.getImage(), "UTF-8") : "")
                     .role(teamService.getRole(projectId, userInfo) == null ? ProjectRole.valueOf("NONE") : teamService.getRole(projectId, userInfo).getRole())
                     .isOnGoing(project.isOnGoing())
+                    .build();
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", resDTO));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/apply")
+    public ResponseEntity<Map<String, Object>> getResumeList(@AuthenticationPrincipal UserEntity userInfo) {
+        try {
+            // 본인이 작성한 글일 경우 불러오기 막기
+
+            final ResumeListResponseDTO resDTO = ResumeListResponseDTO.builder()
+                    .resumes(teamService.getAllResumes(userInfo))
                     .build();
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", resDTO));
