@@ -2,7 +2,10 @@ package com.muji_backend.kw_muji.team.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.muji_backend.kw_muji.common.entity.ParticipationEntity;
 import com.muji_backend.kw_muji.common.entity.ProjectEntity;
+import com.muji_backend.kw_muji.common.entity.UserEntity;
+import com.muji_backend.kw_muji.team.repository.RoleRepository;
 import com.muji_backend.kw_muji.team.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,7 @@ import java.util.Objects;
 @Service
 public class TeamService {
     private final TeamRepository projectRepo;
+    private final RoleRepository roleRepo;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -75,5 +79,18 @@ public class TeamService {
 
     public void registerProject(ProjectEntity entity) {
         projectRepo.save(entity);
+    }
+
+    public ProjectEntity getProject(final Long projectId) {
+        final ProjectEntity project = projectRepo.findById(projectId).orElse(null);
+
+        if(project == null)
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+
+        return project;
+    }
+
+    public ParticipationEntity getRole(final Long projectId, final UserEntity user) {
+        return roleRepo.findByProjectIdAndUsers(projectId, user);
     }
 }
