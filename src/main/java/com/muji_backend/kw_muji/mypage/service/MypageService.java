@@ -26,7 +26,6 @@ import java.util.Objects;
 @Service
 public class MypageService {
     private final MypageRepository mypageRepo;
-    private final ResumeRepository resumeRepo;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -34,9 +33,6 @@ public class MypageService {
 
     @Value("${cloud.aws.s3.folder.folderName1}")
     private String userImageBucketFolder;
-
-    @Value("${cloud.aws.s3.folder.folderName3}")
-    private String resumeBucketFolder;
 
     public Boolean equalPassword(final String email, final String password, final PasswordEncoder encoder) {
         final UserEntity user = mypageRepo.findByEmail(email);
@@ -118,40 +114,6 @@ public class MypageService {
     @Transactional
     public void deleteUser(final UserEntity user) {
         deleteUserImage(user.getEmail());
-
         mypageRepo.delete(user);
-    }
-
-    public String uploadResume(final MultipartFile[] files, final String userName, final ResumeEntity resume) throws IOException {
-        if(files[0].isEmpty())
-            throw new RuntimeException("선택된 포트폴리오가 없음");
-        else if(files.length > 1)
-            throw new RuntimeException("파일 수가 1개를 초과함");
-
-        if(!Objects.equals(files[0].getContentType(), "application/pdf"))
-            throw new RuntimeException("PDF가 아님");
-
-        // 파일 이름 가공
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        final Date time = new Date();
-        final String name = files[0].getOriginalFilename();
-        final String[] fileName = new String[]{Objects.requireNonNull(name).substring(0, name.length() - 4)};
-
-        // S3 Key 구성
-        final String S3Key = resumeBucketFolder + fileName[0] + "\\" + userName + "\\" + dateFormat.format(time) + ".pdf";
-
-        final ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(files[0].getSize());
-        metadata.setContentType("application/pdf");
-
-        // 저장
-        amazonS3.putObject(bucket, S3Key, files[0].getInputStream(), metadata);
-        resume.setName(fileName[0]);
-
-        return S3Key;
-    }
-
-    public void saveResume(final ResumeEntity resume) {
-        resumeRepo.save(resume);
     }
 }

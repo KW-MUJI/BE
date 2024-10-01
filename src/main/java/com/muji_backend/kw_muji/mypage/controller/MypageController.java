@@ -8,6 +8,7 @@ import com.muji_backend.kw_muji.mypage.dto.request.UpdateRequestDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.TokenDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.UserInfoResponseDTO;
 import com.muji_backend.kw_muji.mypage.service.MypageService;
+import com.muji_backend.kw_muji.mypage.service.ResumeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import java.util.Map;
 @RequestMapping("/mypage")
 public class MypageController {
     private final MypageService mypageService;
+    private final ResumeService resumeService;
     private final TokenProvider tokenProvider;
 
     private final PasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
@@ -111,7 +113,7 @@ public class MypageController {
         }
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deleteUser")
     public ResponseEntity<Map<String, Object>> deleteUser(@AuthenticationPrincipal UserEntity userInfo) {
         try {
             final UserEntity user = mypageService.originalUser(userInfo.getEmail());
@@ -133,12 +135,28 @@ public class MypageController {
             final UserEntity user = mypageService.originalUser(userInfo.getEmail());
 
             resume.setUsers(user);
-            resume.setResumePath(mypageService.uploadResume(file, user.getName(), resume)); // 파일명, 파일 주소 모두 저장
+            resume.setResumePath(resumeService.uploadResume(file, user.getName(), resume)); // 파일명, 파일 주소 모두 저장
 
-            mypageService.saveResume(resume);
+            resumeService.saveResume(resume);
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException | IOException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원 탈퇴 오류. 잠시 후 다시 시도해주세요."));
+        }
+    }
+
+    @DeleteMapping("/deleteResume/{resumeId}")
+    public ResponseEntity<Map<String, Object>> deleteResume(@AuthenticationPrincipal UserEntity userInfo, @PathVariable Long resumeId) {
+        try {
+            final UserEntity user = mypageService.originalUser(userInfo.getEmail());
+            final ResumeEntity resume = resumeService.getResume(resumeId, user);
+
+            resumeService.deleteResume(resume);
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", user.getName() + "의 포트폴리오 삭제"));
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "회원 탈퇴 오류. 잠시 후 다시 시도해주세요."));
