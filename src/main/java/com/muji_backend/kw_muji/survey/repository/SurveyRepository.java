@@ -15,5 +15,5 @@ public interface SurveyRepository extends JpaRepository<SurveyEntity, Long> {
 
     Page<SurveyEntity> findByTitleContainingOrDescriptionContaining(String title, String description, Pageable pageable);
     List<SurveyEntity> findByUsers(UserEntity user);
-    List<SurveyEntity> findByOngoingTrueAndEndDateLessThan(LocalDate today);
+    List<SurveyEntity> findByIsOngoingTrueAndEndDateLessThan(LocalDate today);
 }
