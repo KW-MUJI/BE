@@ -20,7 +20,7 @@ public class SurveyScheduledTask {
      * 매일 자정에 설문조사 상태를 업데이트
      * 크론 표현식: 매일 자정에 실행
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void updateSurveyStatus() {
         LocalDate today = LocalDate.now();
