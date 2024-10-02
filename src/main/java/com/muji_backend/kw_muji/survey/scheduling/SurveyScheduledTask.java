@@ -26,7 +26,7 @@ public class SurveyScheduledTask {
         LocalDate today = LocalDate.now();
 
         // 현재 ongoing 상태인 설문조사 중 endDate가 오늘보다 이전인 것들을 검색
-        List<SurveyEntity> ongoingSurveys = surveyRepository.findByOngoingTrueAndEndDateLessThan(today);
+        List<SurveyEntity> ongoingSurveys = surveyRepository.findByIsOngoingTrueAndEndDateLessThan(today);
 
         ongoingSurveys.forEach(survey -> {
             survey.setOngoing(false);
