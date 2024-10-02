@@ -22,7 +22,7 @@ public class MainService {
     private final CalendarService calendarService;
 
     public MainResponseDto getMainInfo(String yearMonth) {
-        // 공지사항 불러오기 및 매핑
+        // 공지사항 불러오기 및 매핑 (각 카테고리별 상위 6개씩)
         MainResponseDto.Notices notices = new MainResponseDto.Notices(
                 mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "").getNotices()),
                 mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "0").getNotices()),
@@ -32,7 +32,9 @@ public class MainService {
         );
 
         // 설문조사 불러오기 (최대 4개)
-        // List<SurveyResponseDto.SurveyItemDto> surveys = surveyService.getSurveys();
+//        List<SurveyResponseDto.SurveyItemDto> surveys = surveyService.getSurveys().stream()
+//                .limit(4)
+//                .collect(Collectors.toList());
 
         // 캘린더 이벤트 불러오기
         // CalendarResponseDto.EventGroup events = calendarService.getCalendarEvents(yearMonth);
@@ -49,6 +51,7 @@ public class MainService {
     // NoticeResponse.Notice 리스트를 MainResponseDto.NoticeItem 리스트로 변환하는 매핑 함수
     private List<MainResponseDto.NoticeItem> mapToNoticeItems(List<NoticeResponse.Notice> notices) {
         return notices.stream()
+                .limit(6)
                 .map(notice -> new MainResponseDto.NoticeItem(
                         notice.getTitle(),
                         notice.getLink(),
