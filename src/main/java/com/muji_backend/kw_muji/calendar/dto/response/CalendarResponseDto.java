@@ -19,7 +19,7 @@ public class CalendarResponseDto {
     @Data
     @AllArgsConstructor
     public static class ProjectDto {
-        private long projectId;
+        private Long projectId;
         private String name;
     }
 
@@ -34,7 +34,7 @@ public class CalendarResponseDto {
     @Data
     @AllArgsConstructor
     public static class UnivEventDto {
-        private long univcalendarId;
+        private Long univcalendarId;
         private String title;
         private LocalDate eventDate;
     }
@@ -42,7 +42,7 @@ public class CalendarResponseDto {
     @Data
     @AllArgsConstructor
     public static class UserEventDto {
-        private long usercalendarId;
+        private Long usercalendarId;
         private String title;
         private LocalDateTime eventDate;
     }
@@ -50,8 +50,8 @@ public class CalendarResponseDto {
     @Data
     @AllArgsConstructor
     public static class ProjectEventDto {
-        private long usercalendarId;
-        private long projectId;
+        private Long usercalendarId;
+        private Long projectId;
         private String title;
         private LocalDateTime eventDate;
     }
