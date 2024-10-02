@@ -1,5 +1,7 @@
 package com.muji_backend.kw_muji.mainpage.controller;
 
+import com.muji_backend.kw_muji.mainpage.dto.response.MainResponseDto;
+import com.muji_backend.kw_muji.mainpage.service.MainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +16,12 @@ import java.util.Map;
 @RequestMapping("/mainpage")
 public class MainController {
 
+    private final MainService mainService;
+
     @GetMapping("/{yearMonth}")
     public ResponseEntity<?> getMainInfo(@PathVariable("yearMonth") String yearMonth) {
         try {
+            MainResponseDto response = mainService.getMainInfo(yearMonth);
             return ResponseEntity.ok().body(Map.of("code", 200 , "data", response));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
