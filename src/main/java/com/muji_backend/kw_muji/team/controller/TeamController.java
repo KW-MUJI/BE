@@ -5,6 +5,7 @@ import com.muji_backend.kw_muji.common.entity.ProjectEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.team.dto.request.RegisterRequestDTO;
+import com.muji_backend.kw_muji.team.dto.request.ResumeRequestDTO;
 import com.muji_backend.kw_muji.team.dto.response.ProjectResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.ResumeListResponseDTO;
 import com.muji_backend.kw_muji.team.service.TeamService;
@@ -103,6 +104,30 @@ public class TeamController {
                     .build();
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", resDTO));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/apply")
+    public ResponseEntity<Map<String, Object>> applyProject(@AuthenticationPrincipal UserEntity userInfo, @RequestBody ResumeRequestDTO dto) {
+        try {
+            // 본인이 작성한 글일 경우 지원 막기
+
+            final ProjectEntity project = teamService.getProject(dto.getProjectId());
+
+            final ParticipationEntity participation = ParticipationEntity.builder()
+                    .project(project)
+                    .role(ProjectRole.APPLICANT)
+                    .resumePath(dto.getResumePath())
+                    .users(userInfo)
+                    .build();
+
+            project.getParticipation().add(participation);
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
         } catch (Exception e) {
