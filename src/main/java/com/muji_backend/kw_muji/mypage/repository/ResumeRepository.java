@@ -9,4 +9,5 @@ import java.util.List;
 public interface ResumeRepository extends JpaRepository<ResumeEntity, Long> {
     ResumeEntity findByUsersAndId(UserEntity user, Long id);
     List<ResumeEntity> findAllByUsers(UserEntity user);
+    int countByUsers(UserEntity user);
 }

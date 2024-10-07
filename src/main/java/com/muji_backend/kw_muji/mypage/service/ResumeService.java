@@ -81,4 +81,8 @@ public class ResumeService {
         deleteResumeFile(resume);
         resumeRepo.delete(resume);
     }
+
+    public boolean checkResumeCount(final UserEntity user) {
+        return resumeRepo.countByUsers(user) < 3;
+    }
 }
