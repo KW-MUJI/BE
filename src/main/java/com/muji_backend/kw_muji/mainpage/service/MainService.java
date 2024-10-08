@@ -23,9 +23,6 @@ public class MainService {
     private final CalendarService calendarService;
 
     public MainResponseDto getMainInfo(UserEntity userInfo, String yearMonth) {
-        if (userInfo == null) {
-
-        }
 
         // 공지사항 불러오기 및 매핑 (각 카테고리별 상위 6개씩)
         MainResponseDto.Notices notices = new MainResponseDto.Notices(
@@ -43,10 +40,12 @@ public class MainService {
                 .collect(Collectors.toList())
                 : List.of();
 
-        // 캘린더 이벤트 불러오기
-        CalendarResponseDto calendarResponse = calendarService.getCalendarEvents(userInfo, yearMonth);
-        CalendarResponseDto.EventGroup events = (calendarResponse != null) ? calendarResponse.getEvents() : new CalendarResponseDto.EventGroup();
-
+        // 캘린더 이벤트 불러오기 - 캘린더 이벤트는 로그인한 사용자만 조회 가능
+        CalendarResponseDto.EventGroup events = null;
+        if (userInfo != null) {
+            CalendarResponseDto calendarResponseDto = calendarService.getCalendarEvents(userInfo, yearMonth);
+            events = (calendarResponseDto != null) ? calendarResponseDto.getEvents() : new CalendarResponseDto.EventGroup();
+        }
 
         return MainResponseDto.builder()
                 .notices(notices)
