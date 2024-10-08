@@ -3,6 +3,7 @@ package com.muji_backend.kw_muji.calendar.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class CalendarResponseDto {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class EventGroup {
         private List<UnivEventDto> univEvents;
         private List<UserEventDto> userEvents;
