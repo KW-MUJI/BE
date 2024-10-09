@@ -101,8 +101,6 @@ public class TeamController {
     @GetMapping("/apply")
     public ResponseEntity<Map<String, Object>> getResumeList(@AuthenticationPrincipal UserEntity userInfo) {
         try {
-            // 본인이 작성한 글일 경우 불러오기 막기
-
             final ResumeListResponseDTO resDTO = ResumeListResponseDTO.builder()
                     .resumes(teamService.getAllResumes(userInfo))
                     .build();
@@ -118,8 +116,6 @@ public class TeamController {
     @PostMapping("/apply")
     public ResponseEntity<Map<String, Object>> applyProject(@AuthenticationPrincipal UserEntity userInfo, @RequestBody ResumeRequestDTO dto) {
         try {
-            // 본인이 작성한 글일 경우 지원 막기
-
             final ProjectEntity project = teamService.getProject(dto.getProjectId());
             final ResumeEntity resume = teamService.getResume(dto.getResumeId());
 
@@ -133,7 +129,7 @@ public class TeamController {
                     .users(userInfo)
                     .build();
 
-            teamService.saveParticipation(participation);
+            teamService.saveParticipation(participation, project);
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
