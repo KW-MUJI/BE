@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResumeRequestDTO {
-    private String resumePath;
+    private Long resumeId;
     private Long projectId;
 }

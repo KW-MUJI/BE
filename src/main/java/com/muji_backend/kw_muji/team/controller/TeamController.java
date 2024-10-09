@@ -2,8 +2,10 @@ package com.muji_backend.kw_muji.team.controller;
 
 import com.muji_backend.kw_muji.common.entity.ParticipationEntity;
 import com.muji_backend.kw_muji.common.entity.ProjectEntity;
+import com.muji_backend.kw_muji.common.entity.ResumeEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
+import com.muji_backend.kw_muji.mypage.service.ResumeService;
 import com.muji_backend.kw_muji.team.dto.request.RegisterRequestDTO;
 import com.muji_backend.kw_muji.team.dto.request.ResumeRequestDTO;
 import com.muji_backend.kw_muji.team.dto.response.ProjectResponseDTO;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ import java.util.Map;
 @RequestMapping("/team")
 public class TeamController {
     private final TeamService teamService;
+    private final ResumeService resumeService;
 
     @Value("${cloud.aws.s3.url}")
     private String bucketURL;
@@ -82,7 +86,7 @@ public class TeamController {
                     .createdAt(project.getCreatedAt())
                     .deadLineAt(project.getDeadlineAt())
                     .image(project.getImage() != null ? bucketURL + URLEncoder.encode(project.getImage(), "UTF-8") : "")
-                    .role(teamService.getRole(projectId, userInfo) == null ? ProjectRole.valueOf("NONE") : teamService.getRole(projectId, userInfo).getRole())
+                    .role(teamService.getRole(projectId, userInfo) == null ? null : teamService.getRole(projectId, userInfo).getRole())
                     .isOnGoing(project.isOnGoing())
                     .build();
 
@@ -117,15 +121,19 @@ public class TeamController {
             // 본인이 작성한 글일 경우 지원 막기
 
             final ProjectEntity project = teamService.getProject(dto.getProjectId());
+            final ResumeEntity resume = teamService.getResume(dto.getResumeId());
+
+            if(!Objects.equals(resume.getUsers().getId(), userInfo.getId()))
+                throw new IllegalArgumentException("본인 포트폴리오가 아님");
 
             final ParticipationEntity participation = ParticipationEntity.builder()
                     .project(project)
                     .role(ProjectRole.APPLICANT)
-                    .resumePath(dto.getResumePath())
+                    .resumePath(resume.getResumePath())
                     .users(userInfo)
                     .build();
 
-            project.getParticipation().add(participation);
+            teamService.saveParticipation(participation);
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {

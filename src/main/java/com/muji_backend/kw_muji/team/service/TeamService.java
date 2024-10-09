@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.muji_backend.kw_muji.common.entity.ParticipationEntity;
 import com.muji_backend.kw_muji.common.entity.ProjectEntity;
+import com.muji_backend.kw_muji.common.entity.ResumeEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.mypage.repository.ResumeRepository;
 import com.muji_backend.kw_muji.team.dto.response.ResumeResponseDTO;
@@ -103,5 +104,13 @@ public class TeamService {
         return resumeRepo.findAllByUsers(user).stream()
                 .map(entity -> new ResumeResponseDTO(entity.getId(), entity.getName(), entity.getCreatedAt()))
                 .toList();
+    }
+
+    public ResumeEntity getResume(final Long resumeId) {
+        return resumeRepo.findById(resumeId).orElse(null);
+    }
+
+    public ParticipationEntity saveParticipation(final ParticipationEntity participation) {
+        return roleRepo.save(participation);
     }
 }
