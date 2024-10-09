@@ -43,9 +43,8 @@ public class MypageController {
     @PostMapping("/checkPw")
     public ResponseEntity<Map<String, Object>> enterUpdate(@AuthenticationPrincipal UserEntity userInfo, @RequestBody PasswordRequestDTO dto) {
         try {
-            if(!mypageService.equalPassword(userInfo.getEmail(), dto.getPassword(), pwdEncoder)) {
+            if(!mypageService.equalPassword(userInfo.getEmail(), dto.getPassword(), pwdEncoder))
                 throw new IllegalArgumentException("비밀번호가 일치하지 않음");
-            }
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
@@ -131,6 +130,9 @@ public class MypageController {
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> registerResume(@AuthenticationPrincipal UserEntity userInfo, @RequestParam(value = "resume", required = false) MultipartFile[] file) {
         try {
+            if(!resumeService.checkResumeCount(userInfo))
+                throw new IllegalArgumentException("포트폴리오는 3개까지만 등록 가능");
+
             final ResumeEntity resume = new ResumeEntity();
             final UserEntity user = mypageService.originalUser(userInfo.getEmail());
 

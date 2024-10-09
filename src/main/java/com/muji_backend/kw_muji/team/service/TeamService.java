@@ -4,7 +4,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.muji_backend.kw_muji.common.entity.ParticipationEntity;
 import com.muji_backend.kw_muji.common.entity.ProjectEntity;
+import com.muji_backend.kw_muji.common.entity.ResumeEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
+import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
+import com.muji_backend.kw_muji.mypage.repository.ResumeRepository;
+import com.muji_backend.kw_muji.team.dto.response.ResumeResponseDTO;
 import com.muji_backend.kw_muji.team.repository.RoleRepository;
 import com.muji_backend.kw_muji.team.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -25,6 +30,7 @@ import java.util.Objects;
 public class TeamService {
     private final TeamRepository projectRepo;
     private final RoleRepository roleRepo;
+    private final ResumeRepository resumeRepo;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -92,5 +98,27 @@ public class TeamService {
 
     public ParticipationEntity getRole(final Long projectId, final UserEntity user) {
         return roleRepo.findByProjectIdAndUsers(projectId, user);
+    }
+
+    public List<ResumeResponseDTO> getAllResumes(final UserEntity user) {
+        return resumeRepo.findAllByUsers(user).stream()
+                .map(entity -> new ResumeResponseDTO(entity.getId(), entity.getName(), entity.getCreatedAt()))
+                .toList();
+    }
+
+    public ResumeEntity getResume(final Long resumeId) {
+        return resumeRepo.findById(resumeId).orElse(null);
+    }
+
+    public void saveParticipation(final ParticipationEntity participation, final ProjectEntity project) {
+        final ParticipationEntity user = roleRepo.findByProjectIdAndUsers(project.getId(), participation.getUsers());
+
+        if(user.getRole() == ProjectRole.APPLICANT)
+            throw new IllegalArgumentException("중복 지원 불가");
+
+        if(user.getRole() == ProjectRole.CREATOR)
+            throw new IllegalArgumentException("본인이 생성한 글");
+
+        roleRepo.save(participation);
     }
 }
