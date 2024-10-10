@@ -129,8 +129,6 @@ public class TeamService {
     }
 
     public List<ProjectListResponseDTO> getOnGoingProjects(int page) {
-        final Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
-
         final List<ProjectEntity> onGoingProjects = projectRepo.findAllByIsOnGoing(true, Sort.by(Sort.Direction.DESC, "createdAt"));
         final List<ProjectEntity> endedProjects = projectRepo.findAllByIsOnGoing(false, Sort.by(Sort.Direction.DESC, "createdAt"));
 

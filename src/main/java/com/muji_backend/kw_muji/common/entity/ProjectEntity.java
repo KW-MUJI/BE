@@ -39,8 +39,7 @@ public class ProjectEntity {
     private String image;
 
     @Column(nullable = false)
-    @ColumnDefault("true")
-    private boolean isOnGoing;
+    private boolean isOnGoing = true;
 
     @PrePersist // entity가 영속화되기 직전에 실행
     protected void onCreate() {
