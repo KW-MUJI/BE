@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectResponseDTO {
+public class ProjectDetailResponseDTO {
     private String name;
     private String description;
     private LocalDateTime createdAt;
