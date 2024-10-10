@@ -113,7 +113,7 @@ public class TeamService {
     public void saveParticipation(final ParticipationEntity participation, final ProjectEntity project) {
         final ParticipationEntity user = roleRepo.findByProjectIdAndUsers(project.getId(), participation.getUsers());
 
-        if(user.getRole() == ProjectRole.APPLICANT)
+        if(user.getRole() == ProjectRole.APPLICANT || user.getRole() == ProjectRole.MEMBER)
             throw new IllegalArgumentException("중복 지원 불가");
 
         if(user.getRole() == ProjectRole.CREATOR)
