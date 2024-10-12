@@ -8,21 +8,27 @@ import com.muji_backend.kw_muji.common.entity.ResumeEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.mypage.repository.ResumeRepository;
+import com.muji_backend.kw_muji.team.dto.response.ProjectListResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.ResumeResponseDTO;
 import com.muji_backend.kw_muji.team.repository.RoleRepository;
 import com.muji_backend.kw_muji.team.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -121,4 +127,38 @@ public class TeamService {
 
         roleRepo.save(participation);
     }
+
+    public List<ProjectListResponseDTO> getOnGoingProjects(int page, String search) {
+        final List<ProjectEntity> onGoingProjects = projectRepo.findAllByIsOnGoing(true, Sort.by(Sort.Direction.DESC, "createdAt"));
+        final List<ProjectEntity> endedProjects = projectRepo.findAllByIsOnGoing(false, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // 두 리스트 합치기
+        List<ProjectEntity> projects = new ArrayList<>();
+        projects.addAll(onGoingProjects);
+        projects.addAll(endedProjects);
+
+        // search 값이 비어 있지 않으면 이름으로 필터링
+        if (search != null && !search.trim().isEmpty()) {
+            String lowerCaseSearch = search.toLowerCase();  // 대소문자 구분 없이 검색
+            projects = projects.stream()
+                    .filter(project -> project.getName().toLowerCase().contains(lowerCaseSearch))
+                    .collect(Collectors.toList());
+        }
+
+        // 수동으로 페이지네이션
+        int start = Math.min(page * 8, projects.size());
+        int end = Math.min((page + 1) * 8, projects.size());
+
+        return projects.subList(start, end).stream()
+                .map(project -> ProjectListResponseDTO.builder()
+                        .id(project.getId())
+                        .name(project.getName())
+                        .start(project.isStart())
+                        .deadlineAt(project.getDeadlineAt())
+                        .image(project.getImage())
+                        .isOnGoing(project.isOnGoing())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }

@@ -8,7 +8,8 @@ import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.mypage.service.ResumeService;
 import com.muji_backend.kw_muji.team.dto.request.RegisterRequestDTO;
 import com.muji_backend.kw_muji.team.dto.request.ResumeRequestDTO;
-import com.muji_backend.kw_muji.team.dto.response.ProjectResponseDTO;
+import com.muji_backend.kw_muji.team.dto.response.ProjectListResponseDTO;
+import com.muji_backend.kw_muji.team.dto.response.ProjectDetailResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.ResumeListResponseDTO;
 import com.muji_backend.kw_muji.team.service.TeamService;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -80,7 +82,7 @@ public class TeamController {
         try {
             final ProjectEntity project = teamService.getProject(projectId);
 
-            final ProjectResponseDTO resDTO = ProjectResponseDTO.builder()
+            final ProjectDetailResponseDTO resDTO = ProjectDetailResponseDTO.builder()
                     .name(project.getName())
                     .description(project.getDescription())
                     .createdAt(project.getCreatedAt())
@@ -132,6 +134,20 @@ public class TeamController {
             teamService.saveParticipation(participation, project);
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> showAllProjects(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                               @RequestParam(value = "search", required = false) String search) {
+        try {
+            List<ProjectListResponseDTO> projects = teamService.getOnGoingProjects(page, search);
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", projects));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
         } catch (Exception e) {
