@@ -142,9 +142,10 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> showAllProjects(@RequestParam(value = "page", defaultValue = "0") int page) {
+    public ResponseEntity<Map<String, Object>> showAllProjects(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                               @RequestParam(value = "search", required = false) String search) {
         try {
-            List<ProjectListResponseDTO> projects = teamService.getOnGoingProjects(page);
+            List<ProjectListResponseDTO> projects = teamService.getOnGoingProjects(page, search);
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", projects));
         } catch (IllegalArgumentException e) {
