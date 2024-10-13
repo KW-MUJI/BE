@@ -2,11 +2,15 @@ package com.muji_backend.kw_muji.mypage.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.muji_backend.kw_muji.common.entity.ParticipationEntity;
 import com.muji_backend.kw_muji.common.entity.ResumeEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
+import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.mypage.dto.request.UpdateRequestDTO;
+import com.muji_backend.kw_muji.mypage.dto.response.MyProjectsResponseDTO;
 import com.muji_backend.kw_muji.mypage.repository.MypageRepository;
 import com.muji_backend.kw_muji.mypage.repository.ResumeRepository;
+import com.muji_backend.kw_muji.team.repository.RoleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -26,6 +32,7 @@ import java.util.Objects;
 @Service
 public class MypageService {
     private final MypageRepository mypageRepo;
+    private final RoleRepository roleRepo;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -115,5 +122,18 @@ public class MypageService {
     public void deleteUser(final UserEntity user) {
         deleteUserImage(user.getEmail());
         mypageRepo.delete(user);
+    }
+
+    public List<MyProjectsResponseDTO> getMyProjects(final UserEntity user) {
+        final List<ParticipationEntity> projectList = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER);
+
+        final List<MyProjectsResponseDTO> myProjectList = projectList.stream().map(list -> {
+            final MyProjectsResponseDTO myProjectsResponseDTO = new MyProjectsResponseDTO();
+            myProjectsResponseDTO.setName(list.getProject().getName());
+
+            return myProjectsResponseDTO;
+        }).toList();
+
+        return myProjectList;
     }
 }

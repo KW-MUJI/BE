@@ -5,7 +5,6 @@ import com.muji_backend.kw_muji.common.entity.ProjectEntity;
 import com.muji_backend.kw_muji.common.entity.ResumeEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
-import com.muji_backend.kw_muji.mypage.service.ResumeService;
 import com.muji_backend.kw_muji.team.dto.request.RegisterRequestDTO;
 import com.muji_backend.kw_muji.team.dto.request.ResumeRequestDTO;
 import com.muji_backend.kw_muji.team.dto.response.ProjectListResponseDTO;
@@ -35,7 +34,6 @@ import java.util.Objects;
 @RequestMapping("/team")
 public class TeamController {
     private final TeamService teamService;
-    private final ResumeService resumeService;
 
     @Value("${cloud.aws.s3.url}")
     private String bucketURL;
