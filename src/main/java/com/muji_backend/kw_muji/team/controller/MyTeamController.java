@@ -28,10 +28,23 @@ public class MyTeamController {
             final List<MyProjectResponseDTO> projects = myTeamService.getMyProjects(userInfo);
 
             return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", projects));
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "MY 팀플 로딩 오류. 잠시 후 다시 시도해주세요."));
         }
     }
+
+//    @GetMapping("/applicant")
+//    public ResponseEntity<Map<String, Object>> getApplicants(@AuthenticationPrincipal UserEntity userInfo) {
+//        try {
+//
+//
+//            return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "MY 모집 팀플 로딩 오류. 잠시 후 다시 시도해주세요."));
+//        }
+//    }
 }
