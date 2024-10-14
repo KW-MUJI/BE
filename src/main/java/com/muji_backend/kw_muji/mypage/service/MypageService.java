@@ -127,13 +127,22 @@ public class MypageService {
     public List<MyProjectsResponseDTO> getMyProjects(final UserEntity user) {
         final List<ParticipationEntity> projectList = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER);
 
-        final List<MyProjectsResponseDTO> myProjectList = projectList.stream().map(list -> {
+        return projectList.stream().map(list -> {
             final MyProjectsResponseDTO myProjectsResponseDTO = new MyProjectsResponseDTO();
             myProjectsResponseDTO.setName(list.getProject().getName());
 
             return myProjectsResponseDTO;
         }).toList();
+    }
 
-        return myProjectList;
+    public List<MyProjectsResponseDTO> getMyCreatedProjects(final UserEntity user) {
+        final List<ParticipationEntity> projectList = roleRepo.findAllByUsersAndRole(user, ProjectRole.CREATOR);
+
+        return projectList.stream().map(list -> {
+            final MyProjectsResponseDTO myProjectsResponseDTO = new MyProjectsResponseDTO();
+            myProjectsResponseDTO.setName(list.getProject().getName());
+
+            return myProjectsResponseDTO;
+        }).toList();
     }
 }

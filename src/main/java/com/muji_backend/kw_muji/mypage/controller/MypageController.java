@@ -170,6 +170,7 @@ public class MypageController {
     public ResponseEntity<Map<String, Object>> main(@AuthenticationPrincipal UserEntity userInfo) {
         try {
             List<MyProjectsResponseDTO> projects = mypageService.getMyProjects(userInfo); // my 팀플
+            List<MyProjectsResponseDTO> createdProjects = mypageService.getMyCreatedProjects(userInfo); // my 생성 팀플
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
