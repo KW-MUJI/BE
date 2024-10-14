@@ -62,7 +62,7 @@ public class MyTeamService {
 
             for(ParticipationEntity applicant : applicants) {
                 final ApplicantResponseDTO member = ApplicantResponseDTO.builder()
-                        .id(applicant.getUsers().getId())
+                        .id(applicant.getId())
                         .image(applicant.getUsers().getImage())
                         .name(applicant.getUsers().getName())
                         .stuNum(applicant.getUsers().getStuNum())
