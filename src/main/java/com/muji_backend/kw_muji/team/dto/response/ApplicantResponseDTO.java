@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class ApplicantResponseDTO {
+    private Long id;
     private String image;
     private String name;
     private int stuNum;
