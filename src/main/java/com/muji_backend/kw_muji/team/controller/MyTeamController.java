@@ -1,5 +1,6 @@
 package com.muji_backend.kw_muji.team.controller;
 
+import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyProjectResponseDTO;
 import com.muji_backend.kw_muji.team.service.MyTeamService;
 import org.springframework.http.ResponseEntity;
@@ -35,16 +36,16 @@ public class MyTeamController {
         }
     }
 
-//    @GetMapping("/applicant")
-//    public ResponseEntity<Map<String, Object>> getApplicants(@AuthenticationPrincipal UserEntity userInfo) {
-//        try {
-//
-//
-//            return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", true));
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "MY 모집 팀플 로딩 오류. 잠시 후 다시 시도해주세요."));
-//        }
-//    }
+    @GetMapping("/applicant")
+    public ResponseEntity<Map<String, Object>> getApplicants(@AuthenticationPrincipal UserEntity userInfo) {
+        try {
+            final List<MyCreatedProjectResponseDTO> projects = myTeamService.getMyCreatedProjects(userInfo);
+
+            return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", projects));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "MY 모집 팀플 로딩 오류. 잠시 후 다시 시도해주세요."));
+        }
+    }
 }
