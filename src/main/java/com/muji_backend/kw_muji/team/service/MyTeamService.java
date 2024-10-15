@@ -1,6 +1,7 @@
 package com.muji_backend.kw_muji.team.service;
 
 import com.muji_backend.kw_muji.common.entity.ParticipationEntity;
+import com.muji_backend.kw_muji.common.entity.ProjectEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.team.dto.response.ApplicantResponseDTO;
@@ -102,11 +103,14 @@ public class MyTeamService {
         roleRepo.save(applicant.get());
     }
 
-//    public void deleteProject(final Long projectId, final UserEntity user) {
-//        // user 정보로 해당 프로젝트의 CREATOR가 맞는지 확인
-//        if(roleRepo.findByProjectIdAndUsers(projectId, user) != null)
-//            throw new IllegalArgumentException("일치하는 유저 정보 없음");
-//
-//
-//    }
+    public void deleteProject(final Long projectId, final UserEntity user) {
+        if (!roleRepo.findByProjectIdAndUsers(projectId, user).getRole().equals(ProjectRole.CREATOR))
+            throw new IllegalArgumentException("삭제 권한 없음");
+
+        if (!teamRepo.findById(projectId).isPresent())
+            throw new IllegalArgumentException("존재하지 않는 프로젝트");
+
+        final ProjectEntity project = teamRepo.findById(projectId).get();
+        teamRepo.delete(project);
+    }
 }

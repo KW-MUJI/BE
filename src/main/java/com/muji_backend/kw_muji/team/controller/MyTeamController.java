@@ -63,8 +63,9 @@ public class MyTeamController {
     }
 
     @DeleteMapping("/delete/{projectId}")
-    public ResponseEntity<Map<String, Object>> deleteProject(@AuthenticationPrincipal UserEntity userInfo, @PathVariable Long resumeId) {
+    public ResponseEntity<Map<String, Object>> deleteProject(@AuthenticationPrincipal UserEntity userInfo, @PathVariable Long projectId) {
         try {
+            myTeamService.deleteProject(projectId, userInfo);
 
             return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
