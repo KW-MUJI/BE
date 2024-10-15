@@ -1,5 +1,6 @@
 package com.muji_backend.kw_muji.team.controller;
 
+import com.muji_backend.kw_muji.team.dto.request.ApplicantRequestDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyProjectResponseDTO;
 import com.muji_backend.kw_muji.team.service.MyTeamService;
@@ -8,10 +9,7 @@ import com.muji_backend.kw_muji.common.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -49,10 +47,10 @@ public class MyTeamController {
         }
     }
 
-    @PostMapping("/select")
-    public ResponseEntity<Map<String, Object>> selectMember(@AuthenticationPrincipal UserEntity userInfo) {
+    @PatchMapping("/select")
+    public ResponseEntity<Map<String, Object>> selectMember(@RequestBody ApplicantRequestDTO dto) {
         try {
-
+            myTeamService.selectApplicant(dto.getId());
 
             return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {

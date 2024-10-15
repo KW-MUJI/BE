@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -75,5 +76,20 @@ public class MyTeamService {
             myCreatedProjectResponseDTO.setApplicants(members);
             return myCreatedProjectResponseDTO;
         }).toList();
+    }
+
+    public void selectApplicant(final Long memberId) {
+        final Optional<ParticipationEntity> applicant = roleRepo.findById(memberId);
+
+        if(!applicant.isPresent() || applicant.get().getRole().equals(ProjectRole.CREATOR))
+            throw new IllegalArgumentException("확인되지 않은 유저입니다.");
+
+        if(applicant.get().getRole().equals(ProjectRole.MEMBER))
+            throw new IllegalArgumentException("이미 선택한 유저입니다.");
+
+        if(applicant.get().getRole().equals(ProjectRole.APPLICANT))
+            applicant.get().setRole(ProjectRole.MEMBER);
+
+        roleRepo.save(applicant.get());
     }
 }
