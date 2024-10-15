@@ -124,4 +124,28 @@ public class CalendarService {
 
         return savedEvent.getId();
     }
+
+    /**
+     * 개인 일정을 삭제하는 메서드
+     *
+     * @param userInfo       현재 인증된 사용자 정보
+     * @param usercalendarId 삭제할 일정 ID
+     */
+    public void deleteCalendarEvent(UserEntity userInfo, Long usercalendarId) {
+        if (userInfo == null) {
+            throw new IllegalArgumentException("유저 정보가 필요합니다.");
+        }
+
+        // 삭제할 일정 조회
+        UserCalendarEntity calendarEntity = userCalendarRepository.findById(usercalendarId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일정을 찾을 수 없습니다. usercalendarId: " + usercalendarId));
+
+        // 일정 소유자 확인
+        if (!calendarEntity.getUsers().getId().equals(userInfo.getId())) {
+            throw new IllegalArgumentException("본인의 일정만 삭제할 수 있습니다.");
+        }
+
+        // 일정 삭제
+        userCalendarRepository.delete(calendarEntity);
+    }
 }
