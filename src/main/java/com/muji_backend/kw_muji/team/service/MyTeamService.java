@@ -8,12 +8,15 @@ import com.muji_backend.kw_muji.team.dto.response.MemberResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyProjectResponseDTO;
 import com.muji_backend.kw_muji.team.repository.RoleRepository;
+import com.muji_backend.kw_muji.team.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ import java.util.Optional;
 @Service
 public class MyTeamService {
     private final RoleRepository roleRepo;
+    private final TeamRepository teamRepo;
 
     public List<MyProjectResponseDTO> getMyProjects(final UserEntity user) {
         final List<ParticipationEntity> participationList = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER); // 내가 맴버로 참가한 참가자 리스트
@@ -78,6 +82,11 @@ public class MyTeamService {
         }).toList();
     }
 
+    public void validation(BindingResult bindingResult, String fieldName) {
+        if (bindingResult.hasFieldErrors(fieldName))
+            throw new IllegalArgumentException(Objects.requireNonNull(bindingResult.getFieldError(fieldName)).getDefaultMessage());
+    }
+
     public void selectApplicant(final Long memberId) {
         final Optional<ParticipationEntity> applicant = roleRepo.findById(memberId);
 
@@ -92,4 +101,12 @@ public class MyTeamService {
 
         roleRepo.save(applicant.get());
     }
+
+//    public void deleteProject(final Long projectId, final UserEntity user) {
+//        // user 정보로 해당 프로젝트의 CREATOR가 맞는지 확인
+//        if(roleRepo.findByProjectIdAndUsers(projectId, user) != null)
+//            throw new IllegalArgumentException("일치하는 유저 정보 없음");
+//
+//
+//    }
 }
