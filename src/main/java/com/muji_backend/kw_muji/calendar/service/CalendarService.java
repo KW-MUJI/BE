@@ -147,7 +147,7 @@ public class CalendarService {
     }
 
     /**
-     * 개인 일정을 삭제하는 메서드
+     * 개인 또는 팀플 일정을 삭제하는 메서드
      *
      * @param userInfo       현재 인증된 사용자 정보
      * @param usercalendarId 삭제할 일정 ID
@@ -166,7 +166,28 @@ public class CalendarService {
             throw new IllegalArgumentException("본인의 일정만 삭제할 수 있습니다.");
         }
 
-        // 일정 삭제
-        userCalendarRepository.delete(calendarEntity);
+        ProjectEntity project = calendarEntity.getProject();
+        if (project != null) {
+            // 팀플 일정이면, 프로젝트에 참여 중인 팀원의 동일한 일정 삭제
+            deleteMatchingProjectCalendarEvents(calendarEntity);
+        } else {
+            // 개인 일정이면 해당 일정만 삭제
+            userCalendarRepository.delete(calendarEntity);
+        }
+    }
+
+    // == Private Methods ==
+
+    // 동일한 팀플 일정을 가진 팀원들의 일정을 삭제하는 메서드
+    private void deleteMatchingProjectCalendarEvents(UserCalendarEntity calendarEntity) {
+        // 삭제할 기준: 동일한 프로젝트, 동일한 날짜, 동일한 내용
+        ProjectEntity project = calendarEntity.getProject();
+        LocalDateTime eventDate = calendarEntity.getEventDate();
+        String title = calendarEntity.getTitle();
+
+        // 동일한 프로젝트, 날짜, 제목을 가진 팀원들의 일정 조회
+        List<UserCalendarEntity> matchingEvents = userCalendarRepository.findAllByProjectAndEventDateAndTitle(project, eventDate, title);
+
+        userCalendarRepository.deleteAll(matchingEvents);
     }
 }
