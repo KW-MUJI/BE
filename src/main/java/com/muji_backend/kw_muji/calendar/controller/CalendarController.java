@@ -47,4 +47,19 @@ public class CalendarController {
             return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
         }
     }
+
+    @DeleteMapping("/{usercalendarId}")
+    public ResponseEntity<?> deleteCalendarEvent(
+            @AuthenticationPrincipal UserEntity userInfo,
+            @PathVariable("usercalendarId") Long usercalendarId) {
+
+        try {
+            calendarService.deleteCalendarEvent(userInfo, usercalendarId);
+            return ResponseEntity.ok().body(Map.of("code", 200, "message", "일정 삭제 성공"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
+        }
+    }
 }
