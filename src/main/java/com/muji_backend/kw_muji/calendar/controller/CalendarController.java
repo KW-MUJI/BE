@@ -56,7 +56,7 @@ public class CalendarController {
         try {
             calendarService.deleteCalendarEvent(userInfo, usercalendarId);
             return ResponseEntity.ok().body(Map.of("code", 200, "message", "일정 삭제 성공"));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));

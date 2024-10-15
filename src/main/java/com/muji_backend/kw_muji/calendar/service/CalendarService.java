@@ -92,9 +92,10 @@ public class CalendarService {
     }
 
     /**
-     * 개인 일정 또는 프로젝트 일정을 생성하는 메서드.
+     * 개인 일정 또는 팀플 일정을 생성하는 메서드
      * 프로젝트 ID가 null인 경우 개인 일정으로 처리
-     * 프로젝트 ID가 있을 경우 해당 프로젝트의 일정으로 처리한
+     * 프로젝트 ID가 있을 경우 팀플에 속한 팀원들에게도 동일한 일정이 추가
+     * 팀원의 Role이 CREATOR나 MEMBER이고, 프로젝트의 start 값이 true인 경우에만 일정이 추가됨
      *
      * @param userInfo   현재 인증된 사용자 정보
      * @param requestDto 일정 생성에 필요한 데이터 (제목, 날짜, 프로젝트 ID 등)
@@ -112,7 +113,28 @@ public class CalendarService {
                     .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트를 조회할 수 없습니다. projectId: " + requestDto.getProjectId()));
         }
 
-        // 일정 생성
+        // 팀플 일정인 경우, 팀원의 Role이 CREATOR나 MEMBER이며 프로젝트가 시작된 경우에만 일정 추가
+        if (project != null && project.isStart()) {
+            List<ParticipationEntity> participants = participationRepository.findAllByProjectAndRoleIn(project, List.of(ProjectRole.CREATOR, ProjectRole.MEMBER));
+
+            // 팀원 각각에게 일정 추가
+            for (ParticipationEntity participant : participants) {
+                addUserCalendarEvent(participant.getUsers(), project, requestDto);
+            }
+        } else if (project != null && !project.isStart()){
+            throw new IllegalStateException("아직 시작되지 않은 팀플입니다. projectId: " + project.getId());
+        } else {
+            // 개인 일정일 경우 본인에게만 일정 추가
+            return addUserCalendarEvent(userInfo, null, requestDto);
+        }
+
+        return null;
+    }
+
+    // == Private Methods ==
+
+    // 개인 일정 또는 팀플 일정을 특정 사용자에게 추가하는 메서드
+    private Long addUserCalendarEvent(UserEntity userInfo, ProjectEntity project, CalendarRequestDto requestDto) {
         UserCalendarEntity calendarEntity = UserCalendarEntity.builder()
                 .users(userInfo)
                 .project(project)
@@ -121,7 +143,6 @@ public class CalendarService {
                 .build();
 
         UserCalendarEntity savedEvent = userCalendarRepository.save(calendarEntity);
-
         return savedEvent.getId();
     }
 
