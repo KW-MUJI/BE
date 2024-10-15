@@ -54,6 +54,7 @@ public class CalendarResponseDto {
     public static class ProjectEventDto {
         private Long usercalendarId;
         private Long projectId;
+        private String name;
         private String title;
         private LocalDateTime eventDate;
     }

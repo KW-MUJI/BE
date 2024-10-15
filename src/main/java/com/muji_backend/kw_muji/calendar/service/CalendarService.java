@@ -77,7 +77,7 @@ public class CalendarService {
                                 .map(e -> new CalendarResponseDto.UserEventDto(e.getId(), e.getTitle(), e.getEventDate()))
                                 .collect(Collectors.toList()),
                         projectEvents.stream()
-                                .map(e -> new CalendarResponseDto.ProjectEventDto(e.getId(), e.getProject().getId(), e.getTitle(), e.getEventDate()))
+                                .map(e -> new CalendarResponseDto.ProjectEventDto(e.getId(), e.getProject().getId(), e.getProject().getName(), e.getTitle(), e.getEventDate()))
                                 .collect(Collectors.toList())
                 ))
                 .build();

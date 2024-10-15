@@ -21,7 +21,7 @@ public class CalendarController {
     @GetMapping("/{yearMonth}")
     public ResponseEntity<?> getCalendar(
             @AuthenticationPrincipal UserEntity userInfo,
-            @PathVariable String yearMonth) {
+            @PathVariable("yearMonth") String yearMonth) {
 
         try {
             CalendarResponseDto response = calendarService.getCalendarEvents(userInfo, yearMonth);
