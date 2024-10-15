@@ -50,7 +50,7 @@ public class SurveyController {
     }
 
     @GetMapping("/{surveyId}")
-    public ResponseEntity<?> getSurvey(@PathVariable Long surveyId) {
+    public ResponseEntity<?> getSurvey(@PathVariable("surveyId") Long surveyId) {
         try {
             SurveyDetailResponseDto responseDto = surveyService.getSurveyDetail(surveyId);
             return ResponseEntity.ok().body(Map.of("code", 200, "data", responseDto));
@@ -64,7 +64,7 @@ public class SurveyController {
     @PostMapping("/submit/{surveyId}")
     public ResponseEntity<?> submitSurvey(
             @AuthenticationPrincipal UserEntity userInfo,
-            @PathVariable Long surveyId,
+            @PathVariable("surveyId") Long surveyId,
             @RequestBody SurveySubmitRequestDto requestDto) {
         try {
             Long responseId = surveySubmitService.submitSurvey(userInfo.getId(), surveyId, requestDto);

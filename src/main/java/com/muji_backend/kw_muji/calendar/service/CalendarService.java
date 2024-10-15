@@ -77,7 +77,7 @@ public class CalendarService {
                                 .map(e -> new CalendarResponseDto.UserEventDto(e.getId(), e.getTitle(), e.getEventDate()))
                                 .collect(Collectors.toList()),
                         projectEvents.stream()
-                                .map(e -> new CalendarResponseDto.ProjectEventDto(e.getId(), e.getProject().getId(), e.getTitle(), e.getEventDate()))
+                                .map(e -> new CalendarResponseDto.ProjectEventDto(e.getId(), e.getProject().getId(), e.getProject().getName(), e.getTitle(), e.getEventDate()))
                                 .collect(Collectors.toList())
                 ))
                 .build();
@@ -92,9 +92,10 @@ public class CalendarService {
     }
 
     /**
-     * 개인 일정 또는 프로젝트 일정을 생성하는 메서드.
+     * 개인 일정 또는 팀플 일정을 생성하는 메서드
      * 프로젝트 ID가 null인 경우 개인 일정으로 처리
-     * 프로젝트 ID가 있을 경우 해당 프로젝트의 일정으로 처리한
+     * 프로젝트 ID가 있을 경우 팀플에 속한 팀원들에게도 동일한 일정이 추가
+     * 팀원의 Role이 CREATOR나 MEMBER이고, 프로젝트의 start 값이 true인 경우에만 일정이 추가됨
      *
      * @param userInfo   현재 인증된 사용자 정보
      * @param requestDto 일정 생성에 필요한 데이터 (제목, 날짜, 프로젝트 ID 등)
@@ -112,7 +113,36 @@ public class CalendarService {
                     .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트를 조회할 수 없습니다. projectId: " + requestDto.getProjectId()));
         }
 
-        // 일정 생성
+        Long userCalendarId = null;
+
+        // 팀플 일정인 경우, 팀원의 Role이 CREATOR나 MEMBER이며 프로젝트가 시작된 경우에만 일정 추가
+        if (project != null && project.isStart()) {
+            List<ParticipationEntity> participants = participationRepository.findAllByProjectAndRoleIn(project, List.of(ProjectRole.CREATOR, ProjectRole.MEMBER));
+
+            // 요청한 유저의 일정 먼저 추가하고 ID 저장
+            userCalendarId = addUserCalendarEvent(userInfo, project, requestDto);
+
+            // 나머지 팀원들에게 일정 추가
+            for (ParticipationEntity participant : participants) {
+                // 본인은 이미 추가했으므로 제외
+                if (!participant.getUsers().getId().equals(userInfo.getId())) {
+                    addUserCalendarEvent(participant.getUsers(), project, requestDto);
+                }
+            }
+        } else if (project != null && !project.isStart()){
+            throw new IllegalStateException("아직 시작되지 않은 팀플입니다. projectId: " + project.getId());
+        } else {
+            // 개인 일정일 경우 본인에게만 일정 추가
+            userCalendarId = addUserCalendarEvent(userInfo, null, requestDto);
+        }
+
+        return userCalendarId;
+    }
+
+    // == Private Methods ==
+
+    // 개인 일정 또는 팀플 일정을 특정 사용자에게 추가하는 메서드
+    private Long addUserCalendarEvent(UserEntity userInfo, ProjectEntity project, CalendarRequestDto requestDto) {
         UserCalendarEntity calendarEntity = UserCalendarEntity.builder()
                 .users(userInfo)
                 .project(project)
@@ -121,7 +151,51 @@ public class CalendarService {
                 .build();
 
         UserCalendarEntity savedEvent = userCalendarRepository.save(calendarEntity);
-
         return savedEvent.getId();
+    }
+
+    /**
+     * 개인 또는 팀플 일정을 삭제하는 메서드
+     *
+     * @param userInfo       현재 인증된 사용자 정보
+     * @param usercalendarId 삭제할 일정 ID
+     */
+    public void deleteCalendarEvent(UserEntity userInfo, Long usercalendarId) {
+        if (userInfo == null) {
+            throw new IllegalArgumentException("유저 정보가 필요합니다.");
+        }
+
+        // 삭제할 일정 조회
+        UserCalendarEntity calendarEntity = userCalendarRepository.findById(usercalendarId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일정을 찾을 수 없습니다. usercalendarId: " + usercalendarId));
+
+        // 일정 소유자 확인
+        if (!calendarEntity.getUsers().getId().equals(userInfo.getId())) {
+            throw new IllegalArgumentException("본인의 일정만 삭제할 수 있습니다.");
+        }
+
+        ProjectEntity project = calendarEntity.getProject();
+        if (project != null) {
+            // 팀플 일정이면, 프로젝트에 참여 중인 팀원의 동일한 일정 삭제
+            deleteMatchingProjectCalendarEvents(calendarEntity);
+        } else {
+            // 개인 일정이면 해당 일정만 삭제
+            userCalendarRepository.delete(calendarEntity);
+        }
+    }
+
+    // == Private Methods ==
+
+    // 동일한 팀플 일정을 가진 팀원들의 일정을 삭제하는 메서드
+    private void deleteMatchingProjectCalendarEvents(UserCalendarEntity calendarEntity) {
+        // 삭제할 기준: 동일한 프로젝트, 동일한 날짜, 동일한 내용
+        ProjectEntity project = calendarEntity.getProject();
+        LocalDateTime eventDate = calendarEntity.getEventDate();
+        String title = calendarEntity.getTitle();
+
+        // 동일한 프로젝트, 날짜, 제목을 가진 팀원들의 일정 조회
+        List<UserCalendarEntity> matchingEvents = userCalendarRepository.findAllByProjectAndEventDateAndTitle(project, eventDate, title);
+
+        userCalendarRepository.deleteAll(matchingEvents);
     }
 }

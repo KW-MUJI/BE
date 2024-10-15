@@ -32,7 +32,7 @@ public class MySurveyController {
     }
 
     @PostMapping("/{surveyId}")
-    public ResponseEntity<?> endSurvey(@PathVariable Long surveyId) {
+    public ResponseEntity<?> endSurvey(@PathVariable("surveyId") Long surveyId) {
         try {
             Long updatedSurveyId = mySurveyService.endSurvey(surveyId);
             return ResponseEntity.ok().body(Map.of("code", 200, "surveyId", updatedSurveyId));
@@ -44,7 +44,7 @@ public class MySurveyController {
     }
 
     @DeleteMapping("/{surveyId}")
-    public ResponseEntity<?> deleteSurvey(@PathVariable Long surveyId) {
+    public ResponseEntity<?> deleteSurvey(@PathVariable("surveyId") Long surveyId) {
         try {
             mySurveyService.deleteSurvey(surveyId);
             return ResponseEntity.ok().body(Map.of("code", 200, "message", "설문조사 삭제 성공"));
@@ -60,7 +60,7 @@ public class MySurveyController {
      * 설문조사 결과 조회
      */
     @GetMapping("/result/{surveyId}")
-    public ResponseEntity<?> getSurveyResult(@PathVariable Long surveyId) {
+    public ResponseEntity<?> getSurveyResult(@PathVariable("surveyId") Long surveyId) {
         try {
             // 설문조사 기본 정보와 질문을 가져오는 부분은 SurveyService의 getSurveyDetail 메서드 사용
             MySurveyResultResponseDto response = mySurveyService.getSurveyResult(surveyId);
