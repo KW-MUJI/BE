@@ -113,4 +113,8 @@ public class MyTeamService {
         final ProjectEntity project = teamRepo.findById(projectId).get();
         teamRepo.delete(project);
     }
+
+    public boolean isMyProject(final Long projectId, final UserEntity user) {
+        return roleRepo.findByProjectIdAndUsers(projectId, user).getRole().equals(ProjectRole.CREATOR);
+    }
 }
