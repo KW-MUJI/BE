@@ -48,17 +48,6 @@ public class TeamService {
             throw new IllegalArgumentException(Objects.requireNonNull(bindingResult.getFieldError(fieldName)).getDefaultMessage());
     }
 
-    // 팀 프로젝트 글 수정 시, 사용하기
-//    public void deleteProjectImage(final String email) {
-//        if(projectRepo.findByEmail(email).getImage() != null) {
-//            final String formalS3Key = mypageRepo.findByEmail(email).getImage();
-//
-//            if(amazonS3.doesObjectExist(bucket, formalS3Key)) {
-//                amazonS3.deleteObject(bucket, formalS3Key);
-//            }
-//        }
-//    }
-
     public String uploadProjectImage(final MultipartFile[] files, final String title) throws IOException {
         if(files.length > 1) {
             throw new IllegalArgumentException("프로젝트 이미지가 1개를 초과함");
@@ -117,11 +106,13 @@ public class TeamService {
     public void saveParticipation(final ParticipationEntity participation, final ProjectEntity project) {
         final ParticipationEntity user = roleRepo.findByProjectIdAndUsers(project.getId(), participation.getUsers());
 
-        if(user.getRole() == ProjectRole.APPLICANT || user.getRole() == ProjectRole.MEMBER)
-            throw new IllegalArgumentException("중복 지원 불가");
+        if(user != null) {
+            if(user.getRole() == ProjectRole.APPLICANT || user.getRole() == ProjectRole.MEMBER)
+                throw new IllegalArgumentException("중복 지원 불가");
 
-        if(user.getRole() == ProjectRole.CREATOR)
-            throw new IllegalArgumentException("본인이 생성한 글");
+            if(user.getRole() == ProjectRole.CREATOR)
+                throw new IllegalArgumentException("본인이 생성한 글");
+        }
 
         roleRepo.save(participation);
     }

@@ -78,7 +78,9 @@ public class MypageController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateUserInfo(@AuthenticationPrincipal UserEntity userInfo, @Valid UpdateRequestDTO dto, @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> updateUserInfo(@AuthenticationPrincipal UserEntity userInfo,
+                                                              @Valid UpdateRequestDTO dto,
+                                                              @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
         try {
             // 유효성 검사
             mypageService.validation(bindingResult, "name");
@@ -93,7 +95,7 @@ public class MypageController {
             if (!dto.getPassword().isBlank())
                 userInfo.setPassword(pwdEncoder.encode(dto.getPassword()));
 
-            if(file != null && file.length > 0 && !file[0].isEmpty())
+            if (file != null && file.length > 0 && !file[0].isEmpty())
                 userInfo.setImage(mypageService.uploadUserImage(file, dto.getName(), userInfo.getEmail()));
             else if (dto.isDeleteImage()) // 프로필 사진 삭제를 요청한 경우
                 mypageService.deleteUserImage(userInfo.getEmail());
@@ -170,6 +172,7 @@ public class MypageController {
     public ResponseEntity<Map<String, Object>> main(@AuthenticationPrincipal UserEntity userInfo) {
         try {
             List<MyProjectsResponseDTO> projects = mypageService.getMyProjects(userInfo); // my 팀플
+            List<MyProjectsResponseDTO> createdProjects = mypageService.getMyCreatedProjects(userInfo); // my 생성 팀플
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
