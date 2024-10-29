@@ -1,24 +1,29 @@
 package com.muji_backend.kw_muji.team.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.muji_backend.kw_muji.common.entity.ParticipationEntity;
 import com.muji_backend.kw_muji.common.entity.ProjectEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
+import com.muji_backend.kw_muji.team.dto.request.ProjectDetailRequestDTO;
 import com.muji_backend.kw_muji.team.dto.response.ApplicantResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MemberResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyProjectResponseDTO;
 import com.muji_backend.kw_muji.team.repository.RoleRepository;
 import com.muji_backend.kw_muji.team.repository.TeamRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -26,6 +31,13 @@ import java.util.Optional;
 public class MyTeamService {
     private final RoleRepository roleRepo;
     private final TeamRepository teamRepo;
+    private final AmazonS3 amazonS3;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
+    @Value("${cloud.aws.s3.folder.folderName2}")
+    private String projectImageBucketFolder;
 
     public List<MyProjectResponseDTO> getMyProjects(final UserEntity user) {
         final List<ParticipationEntity> participationList = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER); // 내가 맴버로 참가한 참가자 리스트
@@ -116,5 +128,58 @@ public class MyTeamService {
 
     public boolean isMyProject(final Long projectId, final UserEntity user) {
         return roleRepo.findByProjectIdAndUsers(projectId, user).getRole().equals(ProjectRole.CREATOR);
+    }
+
+    public void deleteProjectImage(final Long projectId) {
+        if(teamRepo.findById(projectId).get().getImage() != null) {
+            final String formalS3Key = teamRepo.findById(projectId).get().getImage();
+
+            if(amazonS3.doesObjectExist(bucket, formalS3Key))
+                amazonS3.deleteObject(bucket, formalS3Key);
+        }
+    }
+
+    public String uploadProjectImage(final MultipartFile[] files, final String title) throws IOException {
+        if(files.length > 1) {
+            throw new IllegalArgumentException("프로젝트 이미지가 1개를 초과함");
+        }
+
+        if(!Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/jpeg")) {
+            throw new IllegalArgumentException("프로젝트 이미지의 타입이 jpg가 아님");
+        }
+
+        // 파일 이름 가공
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        final Date time = new Date();
+        final String name = files[0].getOriginalFilename();
+        final String[] fileName = new String[]{Objects.requireNonNull(name).substring(0, name.length() - 4)};
+
+        // S3 Key 구성
+        final String S3Key = projectImageBucketFolder + fileName[0] + "\\" + title + "\\" + dateFormat.format(time) + ".jpg";
+
+        final ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(files[0].getSize());
+        metadata.setContentType(files[0].getContentType());
+
+        // 저장
+        amazonS3.putObject(bucket, S3Key, files[0].getInputStream(), metadata);
+
+        return S3Key;
+    }
+
+    @Transactional
+    public void updateProject(final ProjectEntity project, final ProjectDetailRequestDTO dto) {
+        if(dto.getName() != null && !dto.getName().isBlank())
+            project.setName(dto.getName());
+
+        if(dto.getDescription() != null && !dto.getDescription().isBlank())
+            project.setDescription(dto.getDescription());
+
+        if(!dto.isDeleteImage() && project.getImage() != null && !project.getImage().isBlank())
+            project.setImage(project.getImage());
+        else if(dto.isDeleteImage())
+            project.setImage(null);
+
+       teamRepo.save(project);
     }
 }

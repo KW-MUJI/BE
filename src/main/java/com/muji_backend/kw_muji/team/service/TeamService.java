@@ -48,17 +48,6 @@ public class TeamService {
             throw new IllegalArgumentException(Objects.requireNonNull(bindingResult.getFieldError(fieldName)).getDefaultMessage());
     }
 
-    // 팀 프로젝트 글 수정 시, 사용하기
-//    public void deleteProjectImage(final String email) {
-//        if(projectRepo.findByEmail(email).getImage() != null) {
-//            final String formalS3Key = mypageRepo.findByEmail(email).getImage();
-//
-//            if(amazonS3.doesObjectExist(bucket, formalS3Key)) {
-//                amazonS3.deleteObject(bucket, formalS3Key);
-//            }
-//        }
-//    }
-
     public String uploadProjectImage(final MultipartFile[] files, final String title) throws IOException {
         if(files.length > 1) {
             throw new IllegalArgumentException("프로젝트 이미지가 1개를 초과함");
