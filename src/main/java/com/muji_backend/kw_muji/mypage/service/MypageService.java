@@ -59,7 +59,7 @@ public class MypageService {
             user.setName(dto.getName());
 
         if(dto.getStuNum() > 0)
-            user.setStuNum(userEntity.getStuNum());
+            user.setStuNum(dto.getStuNum());
 
         if(dto.getMajor() != null && !dto.getMajor().isBlank())
             user.setMajor(dto.getMajor());
