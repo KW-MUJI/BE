@@ -39,7 +39,9 @@ public class TeamController {
     private String bucketURL;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> writeProject(@AuthenticationPrincipal UserEntity userInfo, @Valid RegisterRequestDTO dto, @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> writeProject(@AuthenticationPrincipal UserEntity userInfo,
+                                                            @Valid RegisterRequestDTO dto,
+                                                            @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
         try {
             // 유효성 검사
             teamService.validation(bindingResult, "name");

@@ -78,7 +78,9 @@ public class MypageController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateUserInfo(@AuthenticationPrincipal UserEntity userInfo, @Valid UpdateRequestDTO dto, @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> updateUserInfo(@AuthenticationPrincipal UserEntity userInfo,
+                                                              @Valid UpdateRequestDTO dto,
+                                                              @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
         try {
             // 유효성 검사
             mypageService.validation(bindingResult, "name");
