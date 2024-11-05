@@ -5,6 +5,7 @@ import com.muji_backend.kw_muji.calendar.dto.response.CalendarResponseDto;
 import com.muji_backend.kw_muji.calendar.repository.*;
 import com.muji_backend.kw_muji.common.entity.*;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -120,6 +121,7 @@ public class CalendarService {
      * @param requestDto 일정 생성에 필요한 데이터 (제목, 날짜, 프로젝트 ID 등)
      * @return 생성된 일정의 ID
      */
+    @Transactional
     public Long addCalendarEvent(UserEntity userInfo, CalendarRequestDto requestDto) {
         if (userInfo == null) {
             throw new IllegalArgumentException("유저 정보가 필요합니다.");
@@ -132,27 +134,28 @@ public class CalendarService {
                     .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트를 조회할 수 없습니다. projectId: " + requestDto.getProjectId()));
         }
 
-        Long userCalendarId = null;
+        // UserCalendarEntity 생성 및 저장
+        UserCalendarEntity calendarEntity = UserCalendarEntity.builder()
+                .title(requestDto.getTitle())
+                .eventDate(requestDto.getEventDate())
+                .build();
+        userCalendarRepository.save(calendarEntity);
 
-        // 팀플 일정인 경우, 팀원의 Role이 CREATOR나 MEMBER이며 프로젝트가 시작된 경우에만 일정 추가
-        if (project != null && project.isStart()) {
-            List<ParticipationEntity> participants = participationRepository.findAllByProjectAndRoleIn(project, List.of(ProjectRole.CREATOR, ProjectRole.MEMBER));
+        Long userCalendarId = calendarEntity.getId();
 
-            // 요청한 유저의 일정 먼저 추가하고 ID 저장
-            userCalendarId = addUserCalendarEvent(userInfo, project, requestDto);
+        if (project == null) { // 개인 일정인 경우
+            addUserEventLink(userInfo, null, calendarEntity);
+        }
+        else if(project.isStart()){ // 프로젝트 일정인 경우
+            // 프로젝트와 연결된 모든 CREATOR 또는 MEMBER 참여자에게 동일한 일정 연결
+            List<ParticipationEntity> participats = participationRepository.findAllByProjectAndRoleIn(project, List.of(ProjectRole.CREATOR, ProjectRole.MEMBER));
 
-            // 나머지 팀원들에게 일정 추가
-            for (ParticipationEntity participant : participants) {
-                // 본인은 이미 추가했으므로 제외
-                if (!participant.getUsers().getId().equals(userInfo.getId())) {
-                    addUserCalendarEvent(participant.getUsers(), project, requestDto);
-                }
+            for (ParticipationEntity participant : participats) {
+                addUserEventLink(participant.getUsers(), project, calendarEntity);
             }
-        } else if (project != null && !project.isStart()) {
+        }
+        else {
             throw new IllegalStateException("아직 시작되지 않은 팀플입니다. projectId: " + project.getId());
-        } else {
-            // 개인 일정일 경우 본인에게만 일정 추가
-            userCalendarId = addUserCalendarEvent(userInfo, null, requestDto);
         }
 
         return userCalendarId;
@@ -160,17 +163,14 @@ public class CalendarService {
 
     // == Private Methods ==
 
-    // 개인 일정 또는 팀플 일정을 특정 사용자에게 추가하는 메서드
-    private Long addUserCalendarEvent(UserEntity userInfo, ProjectEntity project, CalendarRequestDto requestDto) {
-        UserCalendarEntity calendarEntity = UserCalendarEntity.builder()
-                .users(userInfo)
+    // UserEventLinkEntity를 생성하여 UserCalendarEntity와 연결
+    private void addUserEventLink(UserEntity user, ProjectEntity project, UserCalendarEntity calendarEntity) {
+        UserEventLinkEntity eventLinkEntity = UserEventLinkEntity.builder()
+                .users(user)
                 .project(project)
-                .title(requestDto.getTitle())
-                .eventDate(requestDto.getEventDate())
+                .userCalendar(calendarEntity)
                 .build();
-
-        UserCalendarEntity savedEvent = userCalendarRepository.save(calendarEntity);
-        return savedEvent.getId();
+        userEventLinkRepository.save(eventLinkEntity);
     }
 
     /**
