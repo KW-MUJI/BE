@@ -47,9 +47,9 @@ public class ProjectEntity {
         createdAt = now;
     }
 
-    // project : userCalendar = 1 : N
+    // project : userEventLink = 1 : N
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserCalendarEntity> userCalendar = new ArrayList<>();
+    private List<UserEventLinkEntity> userEventLink = new ArrayList<>();
 
     // project : participation = 1 : N
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)

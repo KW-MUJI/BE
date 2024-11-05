@@ -47,7 +47,7 @@ public class UserEntity {
 
     // users : userCalendar = 1 : N
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserCalendarEntity> userCalendar = new ArrayList<>();
+    private List<UserEventLinkEntity> userEventLink = new ArrayList<>();
 
     // users : resume = 1 : N
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
