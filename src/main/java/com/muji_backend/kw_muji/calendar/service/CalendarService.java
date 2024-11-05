@@ -179,42 +179,18 @@ public class CalendarService {
      * @param userInfo       현재 인증된 사용자 정보
      * @param usercalendarId 삭제할 일정 ID
      */
+    @Transactional
     public void deleteCalendarEvent(UserEntity userInfo, Long usercalendarId) {
         if (userInfo == null) {
             throw new IllegalArgumentException("유저 정보가 필요합니다.");
         }
 
-        // 삭제할 일정 조회
-        UserCalendarEntity calendarEntity = userCalendarRepository.findById(usercalendarId)
+        // 삭제할 일정의 링크 조회
+        UserEventLinkEntity userEventLink = userEventLinkRepository.findByUsersAndUserCalendarId(userInfo, usercalendarId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일정을 찾을 수 없습니다. usercalendarId: " + usercalendarId));
 
-        // 일정 소유자 확인
-        if (!calendarEntity.getUsers().getId().equals(userInfo.getId())) {
-            throw new IllegalArgumentException("본인의 일정만 삭제할 수 있습니다.");
-        }
-
-        ProjectEntity project = calendarEntity.getProject();
-        if (project != null) {
-            // 팀플 일정이면, 프로젝트에 참여 중인 팀원의 동일한 일정 삭제
-            deleteMatchingProjectCalendarEvents(calendarEntity);
-        } else {
-            // 개인 일정이면 해당 일정만 삭제
-            userCalendarRepository.delete(calendarEntity);
-        }
-    }
-
-    // == Private Methods ==
-
-    // 동일한 팀플 일정을 가진 팀원들의 일정을 삭제하는 메서드
-    private void deleteMatchingProjectCalendarEvents(UserCalendarEntity calendarEntity) {
-        // 삭제할 기준: 동일한 프로젝트, 동일한 날짜, 동일한 내용
-        ProjectEntity project = calendarEntity.getProject();
-        LocalDateTime eventDate = calendarEntity.getEventDate();
-        String title = calendarEntity.getTitle();
-
-        // 동일한 프로젝트, 날짜, 제목을 가진 팀원들의 일정 조회
-        List<UserCalendarEntity> matchingEvents = userCalendarRepository.findAllByProjectAndEventDateAndTitle(project, eventDate, title);
-
-        userCalendarRepository.deleteAll(matchingEvents);
+        // cascade = CascadeType.ALL, orphanRemoval = true 설정에 의해서
+        // UserCalendarEntity 삭제 - 관련된 모든 UserEventLinkEntity도 자동으로 삭제됨
+        userCalendarRepository.delete(userEventLink.getUserCalendar());
     }
 }
