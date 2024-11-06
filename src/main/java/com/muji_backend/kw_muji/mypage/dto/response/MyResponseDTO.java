@@ -34,7 +34,7 @@ public class MyResponseDTO {
     @Builder
     @AllArgsConstructor
     public static class MySurvey {
-        private Long id;
+        private Long surveyId;
         private String title;
         private LocalDate endDate;
         private boolean isOngoing;
