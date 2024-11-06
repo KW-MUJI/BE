@@ -172,9 +172,6 @@ public class MypageController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> main(@AuthenticationPrincipal UserEntity userInfo) {
         try {
-            List<MyProjectsResponseDTO> projects = mypageService.getMyProjects(userInfo); // my 팀플
-            List<MyProjectsResponseDTO> createdProjects = mypageService.getMyCreatedProjects(userInfo); // my 생성 팀플
-
             // my 팀플, my 생설 팀플, my 설문 조회
             MyResponseDTO response = mypageService.getMyPageInfo(userInfo);
 

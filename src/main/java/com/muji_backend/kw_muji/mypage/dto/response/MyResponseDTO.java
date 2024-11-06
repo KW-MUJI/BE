@@ -27,7 +27,7 @@ public class MyResponseDTO {
     public static class MyCreatedProject {
         private String name;
         private LocalDateTime deadlineAt;
-        private boolean isOnGoing;
+        private boolean isOngoing;
     }
 
     @Data

@@ -32,12 +32,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class MypageService {
-    private final MySurveyService mySurveyService;
     private final MyTeamService myTeamService;
 
     private final SurveyRepository surveyRepository;
@@ -134,36 +134,23 @@ public class MypageService {
         mypageRepo.delete(user);
     }
 
-    public List<MyProjectsResponseDTO> getMyProjects(final UserEntity user) {
-        final List<ParticipationEntity> projectList = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER);
-
-        return projectList.stream().map(list -> {
-            final MyProjectsResponseDTO myProjectsResponseDTO = new MyProjectsResponseDTO();
-            myProjectsResponseDTO.setName(list.getProject().getName());
-
-            return myProjectsResponseDTO;
-        }).toList();
-    }
-
-    public List<MyProjectsResponseDTO> getMyCreatedProjects(final UserEntity user) {
-        final List<ParticipationEntity> projectList = roleRepo.findAllByUsersAndRole(user, ProjectRole.CREATOR);
-
-        return projectList.stream().map(list -> {
-            final MyProjectsResponseDTO myProjectsResponseDTO = new MyProjectsResponseDTO();
-            myProjectsResponseDTO.setName(list.getProject().getName());
-
-            return myProjectsResponseDTO;
-        }).toList();
-    }
-
+    /**
+     * 마이페이지 메인에 표시될 정보를 조회
+     * 1. 참여 중인 팀 프로젝트의 최신 4개 목록 (MEMBER 또는 CREATOR이며 시작된 프로젝트)
+     * 2. 사용자가 생성한 프로젝트 중 모집 중인 최신 4개 목록 (CREATOR인 프로젝트)
+     * 3. 사용자가 작성한 설문조사 중 가장 최근의 4개 목록
+     *
+     * @param user 사용자 엔티티
+     * @return MyResponseDTO
+     */
     public MyResponseDTO getMyPageInfo(UserEntity user) {
-        // my 팀플
-        List<MyProjectResponseDTO> projects = myTeamService.getMyProjects(user);
+        // my 팀플 최신 4개
+        List<String> projects = getMyProjects(user);
 
-        // my 모집 팀플
-        List<MyCreatedProjectResponseDTO> createdProjects = myTeamService.getMyCreatedProjects(user);
+        // my 모집 팀플 최신 4개
+        List<MyResponseDTO.MyCreatedProject> createdProjects = getMyCreatedProjects(user);
 
-        // my 설문조사 최근 4개 제목
+        // my 설문조사 최신 4개 제목
         List<MyResponseDTO.MySurvey> surveys = getMySurvey(user);
 
         return MyResponseDTO.builder()
@@ -191,6 +178,38 @@ public class MypageService {
 
         return mySurveys.stream()
                 .sorted(Comparator.comparing(MyResponseDTO.MySurvey::getEndDate).reversed())
+                .limit(4)
+                .toList();
+    }
+
+    // my 팀플 조회 메소드 - MEMBER인 프로젝트 & CREATOR이며 start가 true인 프로젝트
+    private List<String> getMyProjects(UserEntity user) {
+        List<ParticipationEntity> memberProjects = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER);
+        List<ParticipationEntity> creatorProjects = roleRepo.findAllByUsersAndRole(user, ProjectRole.CREATOR).stream()
+                .filter(project -> project.getProject().isStart())
+                .toList();
+
+        List<ParticipationEntity> joined = Stream.concat(memberProjects.stream(), creatorProjects.stream())
+                .sorted(Comparator.comparing(project -> project.getProject().getDeadlineAt(), Comparator.reverseOrder())) // 마감일 기준 최신 4개 반환
+                .limit(4)
+                .toList();
+
+        return joined.stream()
+                .map(project -> project.getProject().getName())
+                .toList();
+    }
+
+    // my 모집 팀플 조회 메소드 - CREATOR인 프로젝트
+    private List<MyResponseDTO.MyCreatedProject> getMyCreatedProjects(UserEntity user) {
+        List<ParticipationEntity> creatorProjects = roleRepo.findAllByUsersAndRole(user, ProjectRole.CREATOR);
+
+        return creatorProjects.stream()
+                .map(project -> MyResponseDTO.MyCreatedProject.builder()
+                        .name(project.getProject().getName())
+                        .deadlineAt(project.getProject().getDeadlineAt())
+                        .isOngoing(project.getProject().isOnGoing())
+                        .build())
+                .sorted(Comparator.comparing(MyResponseDTO.MyCreatedProject::getDeadlineAt).reversed()) // 최신 모집 팀플 4개 조회
                 .limit(4)
                 .toList();
     }
