@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -15,7 +17,26 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyResponseDTO {
-    private List<MyProjectResponseDTO> projects; // my 팀플
-    private List<MyCreatedProjectResponseDTO> createdProjects; // my 모집 팀플
-    private List<MySurveyResponseDto> surveys; // my 설문
+    private List<String> projects; // my 팀플 (name만 반환)
+    private List<MyCreatedProject> createdProjects; // my 모집 팀플
+    private List<MySurvey> surveys; // my 설문
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class MyCreatedProject {
+        private String name;
+        private LocalDateTime deadlineAt;
+        private boolean isOngoing;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class MySurvey {
+        private Long surveyId;
+        private String title;
+        private LocalDate endDate;
+        private boolean isOngoing;
+    }
 }
