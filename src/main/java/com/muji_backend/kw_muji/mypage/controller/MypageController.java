@@ -6,12 +6,11 @@ import com.muji_backend.kw_muji.common.security.TokenProvider;
 import com.muji_backend.kw_muji.mypage.dto.request.PasswordRequestDTO;
 import com.muji_backend.kw_muji.mypage.dto.request.UpdateRequestDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.MyProjectsResponseDTO;
+import com.muji_backend.kw_muji.mypage.dto.response.MyResponseDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.TokenDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.UserInfoResponseDTO;
 import com.muji_backend.kw_muji.mypage.service.MypageService;
 import com.muji_backend.kw_muji.mypage.service.ResumeService;
-import com.muji_backend.kw_muji.survey.dto.response.MySurveyResponseDto;
-import com.muji_backend.kw_muji.survey.service.MySurveyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +37,6 @@ public class MypageController {
     private final MypageService mypageService;
     private final ResumeService resumeService;
     private final TokenProvider tokenProvider;
-    private final MySurveyService mySurveyService;
 
     private final PasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
 
@@ -178,17 +175,10 @@ public class MypageController {
             List<MyProjectsResponseDTO> projects = mypageService.getMyProjects(userInfo); // my 팀플
             List<MyProjectsResponseDTO> createdProjects = mypageService.getMyCreatedProjects(userInfo); // my 생성 팀플
 
-            // my 설문조사 최근 4개 제목
-            List<MySurveyResponseDto> mySurveyList = mySurveyService.getSurveysByUserId(userInfo.getId());
-            List<MyProjectsResponseDTO> surveys = mySurveyList.stream()
-                    .sorted(Comparator.comparing(MySurveyResponseDto::getCreatedAt).reversed())
-                    .limit(4)
-                    .map(survey -> MyProjectsResponseDTO.builder()
-                            .name(survey.getTitle())
-                            .build())
-                    .toList();
+            // my 팀플, my 생설 팀플, my 설문 조회
+            MyResponseDTO response = mypageService.getMyPageInfo(userInfo);
 
-            return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", response));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
