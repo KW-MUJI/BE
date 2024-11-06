@@ -8,9 +8,15 @@ import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.mypage.dto.request.UpdateRequestDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.MyProjectsResponseDTO;
+import com.muji_backend.kw_muji.mypage.dto.response.MyResponseDTO;
 import com.muji_backend.kw_muji.mypage.repository.MypageRepository;
 import com.muji_backend.kw_muji.mypage.repository.ResumeRepository;
+import com.muji_backend.kw_muji.survey.dto.response.MySurveyResponseDto;
+import com.muji_backend.kw_muji.survey.service.MySurveyService;
+import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
+import com.muji_backend.kw_muji.team.dto.response.MyProjectResponseDTO;
 import com.muji_backend.kw_muji.team.repository.RoleRepository;
+import com.muji_backend.kw_muji.team.service.MyTeamService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -34,6 +37,8 @@ public class MypageService {
     private final MypageRepository mypageRepo;
     private final RoleRepository roleRepo;
     private final AmazonS3 amazonS3;
+    private final MySurveyService mySurveyService;
+    private final MyTeamService myTeamService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -144,5 +149,25 @@ public class MypageService {
 
             return myProjectsResponseDTO;
         }).toList();
+    }
+
+    public MyResponseDTO getMyPageInfo(UserEntity user) {
+        // my 팀플
+        List<MyProjectResponseDTO> projects = myTeamService.getMyProjects(user);
+
+        // my 모집 팀플
+        List<MyCreatedProjectResponseDTO> createdProjects = myTeamService.getMyCreatedProjects(user);
+
+        // my 설문조사 최근 4개 제목
+        List<MySurveyResponseDto> surveys = mySurveyService.getSurveysByUserId(user.getId()).stream()
+                .sorted(Comparator.comparing(MySurveyResponseDto::getCreatedAt).reversed())
+                .limit(4)
+                .toList();
+
+        return MyResponseDTO.builder()
+                .projects(projects)
+                .createdProjects(createdProjects)
+                .surveys(surveys)
+                .build();
     }
 }

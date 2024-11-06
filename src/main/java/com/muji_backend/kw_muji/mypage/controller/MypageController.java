@@ -6,6 +6,7 @@ import com.muji_backend.kw_muji.common.security.TokenProvider;
 import com.muji_backend.kw_muji.mypage.dto.request.PasswordRequestDTO;
 import com.muji_backend.kw_muji.mypage.dto.request.UpdateRequestDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.MyProjectsResponseDTO;
+import com.muji_backend.kw_muji.mypage.dto.response.MyResponseDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.TokenDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.UserInfoResponseDTO;
 import com.muji_backend.kw_muji.mypage.service.MypageService;
@@ -174,7 +175,10 @@ public class MypageController {
             List<MyProjectsResponseDTO> projects = mypageService.getMyProjects(userInfo); // my 팀플
             List<MyProjectsResponseDTO> createdProjects = mypageService.getMyCreatedProjects(userInfo); // my 생성 팀플
 
-            return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+            // my 팀플, my 생설 팀플, my 설문 조회
+            MyResponseDTO response = mypageService.getMyPageInfo(userInfo);
+
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", response));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
