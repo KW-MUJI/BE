@@ -1,6 +1,7 @@
 package com.muji_backend.kw_muji.calendar.repository;
 
 import com.muji_backend.kw_muji.common.entity.ProjectEntity;
+import com.muji_backend.kw_muji.common.entity.UserCalendarEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.UserEventLinkEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

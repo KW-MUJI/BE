@@ -189,8 +189,10 @@ public class CalendarService {
         UserEventLinkEntity userEventLink = userEventLinkRepository.findByUsersAndUserCalendarId(userInfo, usercalendarId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일정을 찾을 수 없습니다. usercalendarId: " + usercalendarId));
 
-        // cascade = CascadeType.ALL, orphanRemoval = true 설정에 의해서
-        // UserCalendarEntity 삭제 - 관련된 모든 UserEventLinkEntity도 자동으로 삭제됨
+        // UserEventLink 삭제
+        userEventLinkRepository.delete(userEventLink);
+
+        // UserCalendarEntity 삭제
         userCalendarRepository.delete(userEventLink.getUserCalendar());
     }
 }
