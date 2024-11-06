@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "userCalendar")
@@ -22,13 +24,7 @@ public class UserCalendarEntity {
     @Column(nullable = false)
     private LocalDateTime eventDate;
 
-    // users : userCalendar = 1 : N
-    @ManyToOne(targetEntity = UserEntity.class)
-    @JoinColumn(name = "userId", nullable = false)
-    private UserEntity users;
-
-    // project : userCalendar = 1 : N
-    @ManyToOne(targetEntity = ProjectEntity.class)
-    @JoinColumn(name = "projectId", nullable = false)
-    private ProjectEntity project;
+    // userCalendar : userEventLink = 1 : N
+    @OneToMany(mappedBy = "userCalendar", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserEventLinkEntity> userEventLink = new ArrayList<>();
 }
