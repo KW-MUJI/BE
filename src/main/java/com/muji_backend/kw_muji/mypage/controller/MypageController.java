@@ -10,6 +10,8 @@ import com.muji_backend.kw_muji.mypage.dto.response.TokenDTO;
 import com.muji_backend.kw_muji.mypage.dto.response.UserInfoResponseDTO;
 import com.muji_backend.kw_muji.mypage.service.MypageService;
 import com.muji_backend.kw_muji.mypage.service.ResumeService;
+import com.muji_backend.kw_muji.survey.dto.response.MySurveyResponseDto;
+import com.muji_backend.kw_muji.survey.service.MySurveyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +39,7 @@ public class MypageController {
     private final MypageService mypageService;
     private final ResumeService resumeService;
     private final TokenProvider tokenProvider;
+    private final MySurveyService mySurveyService;
 
     private final PasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
 
@@ -173,6 +177,16 @@ public class MypageController {
         try {
             List<MyProjectsResponseDTO> projects = mypageService.getMyProjects(userInfo); // my 팀플
             List<MyProjectsResponseDTO> createdProjects = mypageService.getMyCreatedProjects(userInfo); // my 생성 팀플
+
+            // my 설문조사 최근 4개 제목
+            List<MySurveyResponseDto> mySurveyList = mySurveyService.getSurveysByUserId(userInfo.getId());
+            List<MyProjectsResponseDTO> surveys = mySurveyList.stream()
+                    .sorted(Comparator.comparing(MySurveyResponseDto::getCreatedAt).reversed())
+                    .limit(4)
+                    .map(survey -> MyProjectsResponseDTO.builder()
+                            .name(survey.getTitle())
+                            .build())
+                    .toList();
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
