@@ -44,6 +44,7 @@ public class MyTeamService {
 
         return participationList.stream().map(list -> {
             final MyProjectResponseDTO myProjectResponseDTO = new MyProjectResponseDTO();
+            myProjectResponseDTO.setId(list.getProject().getId());
             myProjectResponseDTO.setName(list.getProject().getName());
 
             final List<MemberResponseDTO> members = new ArrayList<>();
@@ -72,7 +73,9 @@ public class MyTeamService {
 
         return participationList.stream().map(list -> {
             final MyCreatedProjectResponseDTO myCreatedProjectResponseDTO = new MyCreatedProjectResponseDTO();
+            myCreatedProjectResponseDTO.setId(list.getProject().getId());
             myCreatedProjectResponseDTO.setName(list.getProject().getName());
+            myCreatedProjectResponseDTO.setIsOnGoing(list.getProject().isOnGoing());
 
             final List<ApplicantResponseDTO> members = new ArrayList<>();
             final List<ParticipationEntity> applicants = new ArrayList<>();
