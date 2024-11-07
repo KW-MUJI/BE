@@ -12,4 +12,5 @@ public interface RoleRepository extends JpaRepository<ParticipationEntity, Long>
     ParticipationEntity findByProjectIdAndUsers(Long projectId, UserEntity user);
     List<ParticipationEntity> findAllByUsersAndRole(UserEntity user, ProjectRole role);
     List<ParticipationEntity> findAllByProjectAndRole(ProjectEntity project, ProjectRole role);
+    int countByProjectAndRole(ProjectEntity project, ProjectRole role);
 }

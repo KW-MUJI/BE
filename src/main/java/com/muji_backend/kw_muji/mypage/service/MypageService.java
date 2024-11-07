@@ -17,6 +17,7 @@ import com.muji_backend.kw_muji.survey.repository.SurveyRepository;
 import com.muji_backend.kw_muji.survey.service.MySurveyService;
 import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyProjectResponseDTO;
+import com.muji_backend.kw_muji.team.dto.response.ResumeResponseDTO;
 import com.muji_backend.kw_muji.team.repository.RoleRepository;
 import com.muji_backend.kw_muji.team.service.MyTeamService;
 import jakarta.transaction.Transactional;
@@ -43,6 +44,7 @@ public class MypageService {
     private final SurveyRepository surveyRepository;
     private final MypageRepository mypageRepo;
     private final RoleRepository roleRepo;
+    private final ResumeRepository resumeRepo;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -144,6 +146,9 @@ public class MypageService {
      * @return MyResponseDTO
      */
     public MyResponseDTO getMyPageInfo(UserEntity user) {
+        // 내 정보
+        MyResponseDTO.MyProfile myProfile = getMyProfile(user);
+
         // my 팀플 최신 4개
         List<String> projects = getMyProjects(user);
 
@@ -153,14 +158,34 @@ public class MypageService {
         // my 설문조사 최신 4개 제목
         List<MyResponseDTO.MySurvey> surveys = getMySurvey(user);
 
+        // 포트폴리오
+        List<MyResponseDTO.Resume> resumes = getMyResumes(user);
+
+        // 지원한 팀플
+        List<MyResponseDTO.applicationProject> applicationProjects = getMyApplicationProjects(user);
+
         return MyResponseDTO.builder()
+                .profile(myProfile)
                 .projects(projects)
                 .createdProjects(createdProjects)
                 .surveys(surveys)
+                .resumes(resumes)
+                .applicationProjects(applicationProjects)
                 .build();
     }
 
     // == Private Methods ==
+
+    // 내 정보를 불러오는 메서드
+    private MyResponseDTO.MyProfile getMyProfile(UserEntity user) {
+        UserEntity userInfo = originalUser(user.getEmail());
+
+        return MyResponseDTO.MyProfile.builder()
+                .userId(userInfo.getId())
+                .userImage(userInfo.getImage())
+                .username(userInfo.getName())
+                .build();
+    }
 
     // 최근 설문조사 4개만 조회하는 메서드
     private List<MyResponseDTO.MySurvey> getMySurvey(UserEntity user) {
@@ -211,6 +236,32 @@ public class MypageService {
                         .build())
                 .sorted(Comparator.comparing(MyResponseDTO.MyCreatedProject::getDeadlineAt).reversed()) // 최신 모집 팀플 4개 조회
                 .limit(4)
+                .toList();
+    }
+
+    // 포트폴리오 조회 메소드
+    private List<MyResponseDTO.Resume> getMyResumes(UserEntity user) {
+        List<ResumeEntity> resumes = resumeRepo.findAllByUsers(user);
+
+        return resumes.stream()
+                .map(resume -> MyResponseDTO.Resume.builder()
+                        .resumeId(resume.getId())
+                        .name(resume.getName())
+                        .createdAt(resume.getCreatedAt())
+                        .build())
+                .toList();
+    }
+
+    // 지원한 팀플
+    private List<MyResponseDTO.applicationProject> getMyApplicationProjects(UserEntity user) {
+        List<ParticipationEntity> applicationProjects = roleRepo.findAllByUsersAndRole(user, ProjectRole.APPLICANT);
+
+        return applicationProjects.stream()
+                .map(project -> MyResponseDTO.applicationProject.builder()
+                        .name(project.getProject().getName())
+                        .applicantsNum(roleRepo.countByProjectAndRole(project.getProject(), ProjectRole.APPLICANT))
+                        .deadlineAt(project.getProject().getDeadlineAt())
+                        .build())
                 .toList();
     }
 }
