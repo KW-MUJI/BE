@@ -146,6 +146,9 @@ public class MypageService {
      * @return MyResponseDTO
      */
     public MyResponseDTO getMyPageInfo(UserEntity user) {
+        // 내 정보
+        MyResponseDTO.MyProfile myProfile = getMyProfile(user);
+
         // my 팀플 최신 4개
         List<String> projects = getMyProjects(user);
 
@@ -162,6 +165,7 @@ public class MypageService {
         List<MyResponseDTO.applicationProject> applicationProjects = getMyApplicationProjects(user);
 
         return MyResponseDTO.builder()
+                .profile(myProfile)
                 .projects(projects)
                 .createdProjects(createdProjects)
                 .surveys(surveys)
@@ -171,6 +175,17 @@ public class MypageService {
     }
 
     // == Private Methods ==
+
+    // 내 정보를 불러오는 메서드
+    private MyResponseDTO.MyProfile getMyProfile(UserEntity user) {
+        UserEntity userInfo = originalUser(user.getEmail());
+
+        return MyResponseDTO.MyProfile.builder()
+                .userId(userInfo.getId())
+                .userImage(userInfo.getImage())
+                .username(userInfo.getName())
+                .build();
+    }
 
     // 최근 설문조사 4개만 조회하는 메서드
     private List<MyResponseDTO.MySurvey> getMySurvey(UserEntity user) {

@@ -14,11 +14,21 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyResponseDTO {
+    private MyProfile profile; // 내 정보
     private List<String> projects; // my 팀플 (name만 반환)
     private List<MyCreatedProject> createdProjects; // my 모집 팀플
     private List<MySurvey> surveys; // my 설문
     private List<Resume> resumes; // 포트폴리오
     private List<applicationProject> applicationProjects; // 지원한 팀플
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class MyProfile {
+        private Long userId;
+        private String userImage;
+        private String username;
+    }
 
     @Data
     @Builder
