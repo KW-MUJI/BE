@@ -158,11 +158,15 @@ public class MypageService {
         // 포트폴리오
         List<MyResponseDTO.Resume> resumes = getMyResumes(user);
 
+        // 지원한 팀플
+        List<MyResponseDTO.applicationProject> applicationProjects = getMyApplicationProjects(user);
+
         return MyResponseDTO.builder()
                 .projects(projects)
                 .createdProjects(createdProjects)
                 .surveys(surveys)
                 .resumes(resumes)
+                .applicationProjects(applicationProjects)
                 .build();
     }
 
@@ -229,6 +233,19 @@ public class MypageService {
                         .resumeId(resume.getId())
                         .name(resume.getName())
                         .createdAt(resume.getCreatedAt())
+                        .build())
+                .toList();
+    }
+
+    // 지원한 팀플
+    private List<MyResponseDTO.applicationProject> getMyApplicationProjects(UserEntity user) {
+        List<ParticipationEntity> applicationProjects = roleRepo.findAllByUsersAndRole(user, ProjectRole.APPLICANT);
+
+        return applicationProjects.stream()
+                .map(project -> MyResponseDTO.applicationProject.builder()
+                        .name(project.getProject().getName())
+                        .applicantsNum(roleRepo.countByProjectAndRole(project.getProject(), ProjectRole.APPLICANT))
+                        .deadlineAt(project.getProject().getDeadlineAt())
                         .build())
                 .toList();
     }
