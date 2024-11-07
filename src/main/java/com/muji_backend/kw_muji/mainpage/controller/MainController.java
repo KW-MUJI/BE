@@ -24,7 +24,6 @@ public class MainController {
     public ResponseEntity<?> getMainInfo(
             @AuthenticationPrincipal UserEntity userInfo,
             @PathVariable("yearMonth") String yearMonth) {
-
         try {
             MainResponseDto response = mainService.getMainInfo(userInfo, yearMonth);
             return ResponseEntity.ok().body(Map.of("code", 200 , "data", response));
