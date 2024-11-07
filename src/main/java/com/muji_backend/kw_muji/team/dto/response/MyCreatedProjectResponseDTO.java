@@ -12,6 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyCreatedProjectResponseDTO {
+    private Long id;
     private String name;
+    private Boolean isOnGoing;
     private List<ApplicantResponseDTO> applicants;
 }

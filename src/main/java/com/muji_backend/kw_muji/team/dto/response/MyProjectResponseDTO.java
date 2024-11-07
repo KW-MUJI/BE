@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyProjectResponseDTO {
+    private Long id;
     private String name;
     private List<MemberResponseDTO> members;
 }
