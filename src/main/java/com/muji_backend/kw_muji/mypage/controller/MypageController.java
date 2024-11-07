@@ -172,7 +172,7 @@ public class MypageController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> main(@AuthenticationPrincipal UserEntity userInfo) {
         try {
-            // my 팀플, my 생설 팀플, my 설문 조회
+            // my 팀플, my 생성 팀플, my 설문 조회
             MyResponseDTO response = mypageService.getMyPageInfo(userInfo);
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", response));

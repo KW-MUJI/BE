@@ -1,8 +1,5 @@
 package com.muji_backend.kw_muji.mypage.dto.response;
 
-import com.muji_backend.kw_muji.survey.dto.response.MySurveyResponseDto;
-import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
-import com.muji_backend.kw_muji.team.dto.response.MyProjectResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +17,8 @@ public class MyResponseDTO {
     private List<String> projects; // my 팀플 (name만 반환)
     private List<MyCreatedProject> createdProjects; // my 모집 팀플
     private List<MySurvey> surveys; // my 설문
+    private List<Resume> resumes; // 포트폴리오
+    private List<applicationProject> applicationProjects; // 지원한 팀플
 
     @Data
     @Builder
@@ -38,5 +37,23 @@ public class MyResponseDTO {
         private String title;
         private LocalDate endDate;
         private boolean isOngoing;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class Resume {
+        private Long resumeId;
+        private String name;
+        private LocalDateTime createdAt;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class applicationProject {
+        private String name;
+        private int applicantsNum;
+        private LocalDateTime deadlineAt;
     }
 }
