@@ -8,6 +8,8 @@ import com.muji_backend.kw_muji.kwnotice.service.NoticeService;
 import com.muji_backend.kw_muji.mainpage.dto.response.MainResponseDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyResponseDto;
 import com.muji_backend.kw_muji.survey.service.SurveyService;
+import com.muji_backend.kw_muji.team.dto.response.ProjectListResponseDTO;
+import com.muji_backend.kw_muji.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ public class MainService {
     private final NoticeService noticeService;
     private final SurveyService surveyService;
     private final CalendarService calendarService;
+    private final TeamService teamService;
 
     public MainResponseDto getMainInfo(UserEntity userInfo, String yearMonth) {
 
@@ -47,10 +50,18 @@ public class MainService {
             events = (calendarResponseDto != null) ? calendarResponseDto.getEvents() : new CalendarResponseDto.EventGroup();
         }
 
+        // 팀플 모집 (최대 4개)
+        List<ProjectListResponseDTO> projects = teamService.getOnGoingProjects(0,"") != null
+                ? teamService.getOnGoingProjects(0,"").stream()
+                .limit(4)
+                .toList()
+                : List.of();
+
         return MainResponseDto.builder()
                 .notices(notices)
                 .surveys(surveys)
                 .events(events)
+                .projects(projects)
                 .build();
     }
 

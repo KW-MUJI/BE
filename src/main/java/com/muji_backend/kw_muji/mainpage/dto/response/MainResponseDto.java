@@ -2,6 +2,7 @@ package com.muji_backend.kw_muji.mainpage.dto.response;
 
 import com.muji_backend.kw_muji.calendar.dto.response.CalendarResponseDto;
 import com.muji_backend.kw_muji.survey.dto.response.SurveyResponseDto;
+import com.muji_backend.kw_muji.team.dto.response.ProjectListResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ public class MainResponseDto {
     private Notices notices;
     private List<SurveyResponseDto.SurveyItemDto> surveys;
     private CalendarResponseDto.EventGroup events;
+    private List<ProjectListResponseDTO> projects;
 
     @Data
     @AllArgsConstructor
