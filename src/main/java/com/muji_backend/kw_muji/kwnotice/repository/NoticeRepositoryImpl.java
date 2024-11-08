@@ -33,7 +33,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
             Document doc = fetchDocument(url);
             return parser.parse(doc, BASE_URL);
         } catch (IOException e) {
-            throw new RuntimeException("공지사항을 가져오는 데 실패했습니다.", e);
+            throw new RuntimeException("공지사항을 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", e);
         }
     }
 
