@@ -19,9 +19,9 @@ public class NoticeController {
 
     @GetMapping("/notices")
     public ResponseEntity<Map<String, Object>> getKwHomeNotices(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(required = false) String searchVal,
-            @RequestParam(required = false) String srCategoryId) {
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "searchVal", required = false) String searchVal,
+            @RequestParam(value = "srCategoryId", required = false) String srCategoryId) {
         try {
             if (page <= 0) {
                 throw new IllegalArgumentException("페이지 번호는 1 이상이어야 합니다.");
@@ -33,7 +33,7 @@ public class NoticeController {
         } catch (NullPointerException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "처리 중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "공지사항을 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+            return ResponseEntity.status(500).body(Map.of("code", 500, "data", e.getMessage()));
         }
     }
 }
