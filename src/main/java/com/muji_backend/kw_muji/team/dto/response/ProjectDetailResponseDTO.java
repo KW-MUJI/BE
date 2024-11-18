@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,7 +17,7 @@ public class ProjectDetailResponseDTO {
     private String name;
     private String description;
     private LocalDateTime createdAt;
-    private LocalDateTime deadLineAt;
+    private LocalDate deadlineAt;
     private String image;
     private ProjectRole role;
     private boolean isOnGoing;

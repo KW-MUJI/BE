@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -15,7 +15,7 @@ public class ProjectListResponseDTO {
     private Long id;
     private String name;
     private boolean start;
-    private LocalDateTime deadlineAt;
+    private LocalDate deadlineAt;
     private String image;
     private boolean isOnGoing;
 }

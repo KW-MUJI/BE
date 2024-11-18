@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -99,7 +100,7 @@ public class MyTeamController {
                     .name(project.getName())
                     .description(project.getDescription())
                     .createdAt(project.getCreatedAt())
-                    .deadLineAt(project.getDeadlineAt())
+                    .deadlineAt(LocalDate.from(project.getDeadlineAt()))
                     .image(project.getImage() != null ? bucketURL + URLEncoder.encode(project.getImage(), "UTF-8") : "")
                     .role(teamService.getRole(projectId, userInfo) == null ? null : teamService.getRole(projectId, userInfo).getRole())
                     .isOnGoing(project.isOnGoing())
