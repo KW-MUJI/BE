@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -143,7 +144,7 @@ public class TeamService {
                         .id(project.getId())
                         .name(project.getName())
                         .start(project.isStart())
-                        .deadlineAt(project.getDeadlineAt())
+                        .deadlineAt(LocalDate.from(project.getDeadlineAt()))
                         .image(project.getImage())
                         .isOnGoing(project.isOnGoing())
                         .build())
