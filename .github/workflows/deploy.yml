@@ -34,13 +34,13 @@ jobs:
                 ${{ runner.os }}-gradle-
 
     # 프로젝트 저장소에 업로드하면 안되는 설정 파일들을 생성
-    - name: Make application.yml
+    - name: Make application.properties
       run: |
         cd ./src/main
         mkdir resources
         cd ./resources
-        touch ./application.yml
-        echo "$APPLICATION" > ./application.yml
+        touch ./application.properties
+        echo "$APPLICATION" > ./application.properties
       env:
         APPLICATION: ${{ secrets.APPLICATION }}
       shell: bash
