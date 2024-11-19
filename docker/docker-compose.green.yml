@@ -1,5 +1,4 @@
 #green
-version: '3'
 services:
   backend:
     build: .
