@@ -86,3 +86,4 @@ jobs:
         --deployment-config-name CodeDeployDefault.OneAtATime
         --deployment-group-name spring-deploy-group
         --s3-location bucket=backend-kwmuji-bucket,bundleType=zip,key=spring-build.zip
+ 
