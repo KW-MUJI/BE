@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,8 +52,9 @@ public class MainService {
         }
 
         // 팀플 모집 (최대 4개)
-        List<ProjectListResponseDTO> projects = teamService.getOnGoingProjects(0,"") != null
-                ? teamService.getOnGoingProjects(0,"").stream()
+        Map<String, Object> result = teamService.getOnGoingProjects(0, "");
+        List<ProjectListResponseDTO> projects = result.get("projects") != null
+                ? ((List<ProjectListResponseDTO>) result.get("projects")).stream()
                 .limit(4)
                 .toList()
                 : List.of();

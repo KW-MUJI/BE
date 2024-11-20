@@ -23,10 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -118,7 +115,7 @@ public class TeamService {
         roleRepo.save(participation);
     }
 
-    public List<ProjectListResponseDTO> getOnGoingProjects(int page, String search) {
+    public Map<String, Object> getOnGoingProjects(int page, String search) {
         final List<ProjectEntity> onGoingProjects = projectRepo.findAllByIsOnGoing(true, Sort.by(Sort.Direction.DESC, "createdAt"));
         final List<ProjectEntity> endedProjects = projectRepo.findAllByIsOnGoing(false, Sort.by(Sort.Direction.DESC, "createdAt"));
 
@@ -135,11 +132,15 @@ public class TeamService {
                     .collect(Collectors.toList());
         }
 
+        // 전체 페이지 수 계산
+        int totalProjects = projects.size();
+        int totalPages = (int) Math.ceil((double) totalProjects / 8);
+
         // 수동으로 페이지네이션
         int start = Math.min(page * 8, projects.size());
         int end = Math.min((page + 1) * 8, projects.size());
 
-        return projects.subList(start, end).stream()
+        List<ProjectListResponseDTO> projectDTO = projects.subList(start, end).stream()
                 .map(project -> ProjectListResponseDTO.builder()
                         .id(project.getId())
                         .name(project.getName())
@@ -148,7 +149,11 @@ public class TeamService {
                         .image(project.getImage())
                         .isOnGoing(project.isOnGoing())
                         .build())
-                .collect(Collectors.toList());
-    }
+                .toList();
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("projects", projectDTO);
+        response.put("totalPages", totalPages);
+        return response;
+    }
 }
