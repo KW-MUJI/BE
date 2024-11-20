@@ -146,9 +146,9 @@ public class TeamController {
     public ResponseEntity<Map<String, Object>> showAllProjects(@RequestParam(value = "page", defaultValue = "0") int page,
                                                                @RequestParam(value = "search", required = false) String search) {
         try {
-            List<ProjectListResponseDTO> projects = teamService.getOnGoingProjects(page, search);
+            Map<String, Object> result = teamService.getOnGoingProjects(page, search);
 
-            return ResponseEntity.ok().body(Map.of("code", 200, "data", projects));
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", result));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
         } catch (Exception e) {
