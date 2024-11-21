@@ -21,6 +21,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
@@ -37,6 +39,9 @@ public class TeamService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    @Value("${cloud.aws.s3.url}")
+    private String bucketURL;
 
     @Value("${cloud.aws.s3.folder.folderName2}")
     private String projectImageBucketFolder; // aws에 추가하기
@@ -116,44 +121,50 @@ public class TeamService {
     }
 
     public Map<String, Object> getOnGoingProjects(int page, String search) {
-        final List<ProjectEntity> onGoingProjects = projectRepo.findAllByIsOnGoing(true, Sort.by(Sort.Direction.DESC, "createdAt"));
-        final List<ProjectEntity> endedProjects = projectRepo.findAllByIsOnGoing(false, Sort.by(Sort.Direction.DESC, "createdAt"));
+            final List<ProjectEntity> onGoingProjects = projectRepo.findAllByIsOnGoing(true, Sort.by(Sort.Direction.DESC, "createdAt"));
+            final List<ProjectEntity> endedProjects = projectRepo.findAllByIsOnGoing(false, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        // 두 리스트 합치기
-        List<ProjectEntity> projects = new ArrayList<>();
-        projects.addAll(onGoingProjects);
-        projects.addAll(endedProjects);
+            // 두 리스트 합치기
+            List<ProjectEntity> projects = new ArrayList<>();
+            projects.addAll(onGoingProjects);
+            projects.addAll(endedProjects);
 
-        // search 값이 비어 있지 않으면 이름으로 필터링
-        if (search != null && !search.trim().isEmpty()) {
-            String lowerCaseSearch = search.toLowerCase();  // 대소문자 구분 없이 검색
-            projects = projects.stream()
-                    .filter(project -> project.getName().toLowerCase().contains(lowerCaseSearch))
-                    .collect(Collectors.toList());
-        }
+            // search 값이 비어 있지 않으면 이름으로 필터링
+            if (search != null && !search.trim().isEmpty()) {
+                String lowerCaseSearch = search.toLowerCase();  // 대소문자 구분 없이 검색
+                projects = projects.stream()
+                        .filter(project -> project.getName().toLowerCase().contains(lowerCaseSearch))
+                        .collect(Collectors.toList());
+            }
 
-        // 전체 페이지 수 계산
-        int totalProjects = projects.size();
-        int totalPages = (int) Math.ceil((double) totalProjects / 8);
+            // 전체 페이지 수 계산
+            int totalProjects = projects.size();
+            int totalPages = (int) Math.ceil((double) totalProjects / 8);
 
-        // 수동으로 페이지네이션
-        int start = Math.min(page * 8, projects.size());
-        int end = Math.min((page + 1) * 8, projects.size());
+            // 수동으로 페이지네이션
+            int start = Math.min(page * 8, projects.size());
+            int end = Math.min((page + 1) * 8, projects.size());
 
-        List<ProjectListResponseDTO> projectDTO = projects.subList(start, end).stream()
-                .map(project -> ProjectListResponseDTO.builder()
-                        .id(project.getId())
-                        .name(project.getName())
-                        .start(project.isStart())
-                        .deadlineAt(LocalDate.from(project.getDeadlineAt()))
-                        .image(project.getImage())
-                        .isOnGoing(project.isOnGoing())
-                        .build())
-                .toList();
+            List<ProjectListResponseDTO> projectDTO = projects.subList(start, end).stream()
+                    .map(project -> {
+                        try {
+                            return ProjectListResponseDTO.builder()
+                                    .id(project.getId())
+                                    .name(project.getName())
+                                    .start(project.isStart())
+                                    .deadlineAt(LocalDate.from(project.getDeadlineAt()))
+                                    .image(project.getImage() != null ? bucketURL + URLEncoder.encode(project.getImage(), "UTF-8") : "")
+                                    .isOnGoing(project.isOnGoing())
+                                    .build();
+                        } catch (UnsupportedEncodingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .toList();
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("projects", projectDTO);
-        response.put("totalPages", totalPages);
-        return response;
+            Map<String, Object> response = new HashMap<>();
+            response.put("projects", projectDTO);
+            response.put("totalPages", totalPages);
+            return response;
     }
 }
