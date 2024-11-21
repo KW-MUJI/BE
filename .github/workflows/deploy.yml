@@ -10,8 +10,9 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
     - uses: actions/checkout@v3
@@ -20,7 +21,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '21'
-        distribution: 'oracle'
+        distribution: 'temurin'
 
     # Gradle을 캐싱 -> 빌드 속도가 증가하는 효과
     - name: Gradle 캐싱
