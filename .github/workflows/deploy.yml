@@ -1,5 +1,5 @@
 # Workflow의 이름을 지정
-name: BackEnd - CI/CD
+name: BackEnd - CI/CD - deploy
 
 on:
   push:
