@@ -21,4 +21,5 @@ public class ProjectDetailResponseDTO {
     private String image;
     private ProjectRole role;
     private boolean isOnGoing;
+    private boolean start;
 }
