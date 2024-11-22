@@ -91,6 +91,7 @@ public class TeamController {
                     .image(project.getImage() != null ? bucketURL + URLEncoder.encode(project.getImage(), "UTF-8") : "")
                     .role(teamService.getRole(projectId, userInfo) == null ? null : teamService.getRole(projectId, userInfo).getRole())
                     .isOnGoing(project.isOnGoing())
+                    .start(project.isStart())
                     .build();
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", resDTO));

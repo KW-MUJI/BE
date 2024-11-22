@@ -152,7 +152,7 @@ public class UserController {
     }
 
     @PostMapping("/resetPw")
-    public ResponseEntity<Map<String, Object>> resetPassword(@AuthenticationPrincipal UserEntity userInfo, @RequestBody @Valid ResetPWRequestDTO dto, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody @Valid ResetPWRequestDTO dto, BindingResult bindingResult) {
         try {
             userService.validation(bindingResult, "password");
 
@@ -163,7 +163,7 @@ public class UserController {
                     .password(pwEncoder.encode(dto.getPassword()))
                     .build();
 
-            userService.updatePw(userInfo.getEmail(), user);
+            userService.updatePw(dto.getEmail(), user);
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
