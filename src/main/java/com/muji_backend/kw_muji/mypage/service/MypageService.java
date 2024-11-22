@@ -30,6 +30,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,6 +54,9 @@ public class MypageService {
 
     @Value("${cloud.aws.s3.folder.folderName1}")
     private String userImageBucketFolder;
+
+    @Value("${cloud.aws.s3.url}")
+    private String bucketURL;
 
     public Boolean equalPassword(final String email, final String password, final PasswordEncoder encoder) {
         final UserEntity user = mypageRepo.findByEmail(email);
@@ -145,7 +150,7 @@ public class MypageService {
      * @param user 사용자 엔티티
      * @return MyResponseDTO
      */
-    public MyResponseDTO getMyPageInfo(UserEntity user) {
+    public MyResponseDTO getMyPageInfo(UserEntity user) throws UnsupportedEncodingException {
         // 내 정보
         MyResponseDTO.MyProfile myProfile = getMyProfile(user);
 
@@ -177,12 +182,12 @@ public class MypageService {
     // == Private Methods ==
 
     // 내 정보를 불러오는 메서드
-    private MyResponseDTO.MyProfile getMyProfile(UserEntity user) {
+    private MyResponseDTO.MyProfile getMyProfile(UserEntity user) throws UnsupportedEncodingException {
         UserEntity userInfo = originalUser(user.getEmail());
 
         return MyResponseDTO.MyProfile.builder()
                 .userId(userInfo.getId())
-                .userImage(userInfo.getImage())
+                .userImage(user.getImage() != null ? bucketURL + URLEncoder.encode(user.getImage(), "UTF-8") : "")
                 .username(userInfo.getName())
                 .build();
     }

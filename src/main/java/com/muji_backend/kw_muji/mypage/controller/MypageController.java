@@ -176,7 +176,7 @@ public class MypageController {
             MyResponseDTO response = mypageService.getMyPageInfo(userInfo);
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", response));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "마이페이지 로딩 오류. 잠시 후 다시 시도해주세요."));
