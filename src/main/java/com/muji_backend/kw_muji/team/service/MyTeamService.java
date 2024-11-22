@@ -185,4 +185,15 @@ public class MyTeamService {
 
        teamRepo.save(project);
     }
+
+    public void updateStart(final Long projectId) {
+        final ProjectEntity project = teamRepo.findById(projectId).get();
+
+        if(!project.isStart())
+            project.setStart(true);
+        else
+            throw new IllegalArgumentException("이미 시작한 프로젝트");
+
+        teamRepo.save(project);
+    }
 }
