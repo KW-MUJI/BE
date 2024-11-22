@@ -138,4 +138,20 @@ public class MyTeamController {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "팀 프로젝트 수정 오류. 잠시 후 다시 시도해주세요."));
         }
     }
+
+    @PatchMapping("/start/{projectId}")
+    public ResponseEntity<Map<String, Object>> startProject(@AuthenticationPrincipal UserEntity userInfo, @PathVariable Long projectId) {
+        try {
+            if(!myTeamService.isMyProject(projectId, userInfo))
+                throw new IllegalArgumentException("내가 생성한 프로젝트가 아님");
+
+            myTeamService.updateStart(projectId);
+
+            return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "MY 팀플 로딩 오류. 잠시 후 다시 시도해주세요."));
+        }
+    }
 }
