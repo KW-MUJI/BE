@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -104,8 +105,8 @@ public class MypageController {
             final UserEntity updateUser = mypageService.updateUser(userInfo, dto);
 
             final TokenDTO resDTO = TokenDTO.builder()
-                    .accessToken(tokenProvider.createAccessToken(updateUser))
-                    .refreshToken(tokenProvider.createRefreshToken(updateUser))
+                    .accessToken(tokenProvider.createAccessToken(Optional.ofNullable(updateUser)))
+                    .refreshToken(tokenProvider.createRefreshToken(Optional.ofNullable(updateUser)))
                     .build();
 
             return ResponseEntity.ok().body(Map.of("code", 200, "data", resDTO));
