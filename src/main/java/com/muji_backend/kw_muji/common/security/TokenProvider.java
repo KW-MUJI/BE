@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,7 +21,7 @@ import java.util.Date;
 public class TokenProvider {
     private final JwtProperties jwtProperties;
 
-    public String createAccessToken(UserEntity user){
+    public String createAccessToken(Optional<UserEntity> user){
         log.info("creating access token");
 
         Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
@@ -28,16 +29,16 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512,jwtProperties.getSecretKey())
-                .setSubject(String.valueOf(user.getId())) // 토큰 제목
+                .setSubject(String.valueOf(user.get().getId())) // 토큰 제목
                 .setIssuer(jwtProperties.getIssuer()) // 토큰 발급자
                 .setIssuedAt(new Date()) // 토큰 발급 시간
                 .setExpiration(expiryDate) // 토큰 만료 시간
-                .claim("id", user.getId()) // 토큰에 사용자 아이디 추가하여 전달
-                .claim("email", user.getEmail())
+                .claim("id", user.get().getId()) // 토큰에 사용자 아이디 추가하여 전달
+                .claim("email", user.get().getEmail())
                 .compact(); // 토큰 생성
     }
 
-    public String createRefreshToken(UserEntity user){
+    public String createRefreshToken(Optional<UserEntity> user){
         log.info("creating refresh token");
 
         Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
@@ -45,12 +46,12 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512,jwtProperties.getSecretKey())
-                .setSubject(String.valueOf(user.getId()))
+                .setSubject(String.valueOf(user.get().getId()))
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .claim("id", user.getId())
-                .claim("email", user.getEmail())
+                .claim("id", user.get().getId())
+                .claim("email", user.get().getEmail())
                 .compact();
     }
 

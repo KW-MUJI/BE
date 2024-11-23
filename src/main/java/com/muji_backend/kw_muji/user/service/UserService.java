@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -52,5 +53,9 @@ public class UserService {
         updateUser.setPassword(user.getPassword());
 
         userRepo.save(updateUser);
+    }
+
+    public Optional<UserEntity> getById(final Long id) {
+        return userRepo.findById(id);
     }
 }
