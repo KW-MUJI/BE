@@ -187,7 +187,7 @@ public class MypageService {
 
         return MyResponseDTO.MyProfile.builder()
                 .userId(userInfo.getId())
-                .userImage(user.getImage() != null ? bucketURL + URLEncoder.encode(user.getImage(), "UTF-8") : "")
+                .userImage(userInfo.getImage() != null ? bucketURL + URLEncoder.encode(userInfo.getImage(), "UTF-8") : "")
                 .username(userInfo.getName())
                 .build();
     }
