@@ -184,7 +184,7 @@ public class MyTeamService {
             project.setImage(null);
 
         if(dto.getDeadlineAt() != null)
-            project.setDeadlineAt(project.getDeadlineAt());
+            project.setDeadlineAt(dto.getDeadlineAt().atStartOfDay());
 
        teamRepo.save(project);
     }
