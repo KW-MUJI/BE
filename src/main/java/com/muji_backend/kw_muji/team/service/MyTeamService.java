@@ -183,6 +183,9 @@ public class MyTeamService {
         else if(dto.isDeleteImage())
             project.setImage(null);
 
+        if(dto.getDeadlineAt() != null)
+            project.setDeadlineAt(project.getDeadlineAt());
+
        teamRepo.save(project);
     }
 
