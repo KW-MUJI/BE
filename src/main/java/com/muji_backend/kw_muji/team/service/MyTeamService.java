@@ -7,6 +7,7 @@ import com.muji_backend.kw_muji.common.entity.ProjectEntity;
 import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.team.dto.request.ProjectDetailRequestDTO;
+import com.muji_backend.kw_muji.team.dto.request.ProjectStartRequestDTO;
 import com.muji_backend.kw_muji.team.dto.response.ApplicantResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MemberResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
@@ -22,6 +23,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -32,12 +35,16 @@ public class MyTeamService {
     private final RoleRepository roleRepo;
     private final TeamRepository teamRepo;
     private final AmazonS3 amazonS3;
+    private final TeamMailSendService teamMailSendService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     @Value("${cloud.aws.s3.folder.folderName2}")
     private String projectImageBucketFolder;
+
+    @Value("${cloud.aws.s3.url}")
+    private String bucketURL;
 
     public List<MyProjectResponseDTO> getMyProjects(final UserEntity user) {
         final List<ParticipationEntity> participationList = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER); // 내가 맴버로 참가한 참가자 리스트
@@ -82,14 +89,25 @@ public class MyTeamService {
             applicants.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.APPLICANT));
 
             for(ParticipationEntity applicant : applicants) {
-                final ApplicantResponseDTO member = ApplicantResponseDTO.builder()
-                        .id(applicant.getId())
-                        .image(applicant.getUsers().getImage())
-                        .name(applicant.getUsers().getName())
-                        .stuNum(applicant.getUsers().getStuNum())
-                        .major(applicant.getUsers().getMajor())
-                        .resume(applicant.getResumePath())
-                        .build();
+                final ApplicantResponseDTO member;
+                final UserEntity userInfo = applicant.getUsers();
+                try {
+                    member = ApplicantResponseDTO.builder()
+                            .id(applicant.getId())
+                            .image(applicant.getUsers().getImage() != null
+                                    ? bucketURL + URLEncoder.encode(userInfo.getImage(), "UTF-8")
+                                    : "")
+                            .name(applicant.getUsers().getName())
+                            .stuNum(applicant.getUsers().getStuNum())
+                            .major(applicant.getUsers().getMajor())
+                            .resume(applicant.getResumePath() != null
+                                    ? bucketURL + URLEncoder.encode(applicant.getResumePath(), "UTF-8")
+                                    : "")
+                            .build();
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+
                 members.add(member);
             }
 
@@ -101,21 +119,6 @@ public class MyTeamService {
     public void validation(BindingResult bindingResult, String fieldName) {
         if (bindingResult.hasFieldErrors(fieldName))
             throw new IllegalArgumentException(Objects.requireNonNull(bindingResult.getFieldError(fieldName)).getDefaultMessage());
-    }
-
-    public void selectApplicant(final Long memberId) {
-        final Optional<ParticipationEntity> applicant = roleRepo.findById(memberId);
-
-        if(!applicant.isPresent() || applicant.get().getRole().equals(ProjectRole.CREATOR))
-            throw new IllegalArgumentException("확인되지 않은 유저입니다.");
-
-        if(applicant.get().getRole().equals(ProjectRole.MEMBER))
-            throw new IllegalArgumentException("이미 선택한 유저입니다.");
-
-        if(applicant.get().getRole().equals(ProjectRole.APPLICANT))
-            applicant.get().setRole(ProjectRole.MEMBER);
-
-        roleRepo.save(applicant.get());
     }
 
     public void deleteProject(final Long projectId, final UserEntity user) {
@@ -183,16 +186,40 @@ public class MyTeamService {
         else if(dto.isDeleteImage())
             project.setImage(null);
 
+        if(dto.getDeadlineAt() != null)
+            project.setDeadlineAt(dto.getDeadlineAt().atStartOfDay());
+
        teamRepo.save(project);
     }
 
-    public void updateStart(final Long projectId) {
-        final ProjectEntity project = teamRepo.findById(projectId).get();
+    public void selectApplicant(final List<Long> memberIdList) {
+        for (Long memberId : memberIdList) {
+            final Optional<ParticipationEntity> applicant = roleRepo.findById(memberId);
+
+            if(applicant.isEmpty() || applicant.get().getRole().equals(ProjectRole.CREATOR))
+                throw new IllegalArgumentException("확인되지 않은 유저입니다.");
+
+            if(applicant.get().getRole().equals(ProjectRole.MEMBER))
+                throw new IllegalArgumentException("이미 선택한 유저입니다.");
+
+            if(applicant.get().getRole().equals(ProjectRole.APPLICANT))
+                applicant.get().setRole(ProjectRole.MEMBER);
+
+            roleRepo.save(applicant.get());
+            teamMailSendService.joinEmail(applicant.get().getUsers().getEmail());
+        }
+    }
+
+    public void updateStart(final ProjectStartRequestDTO dto) {
+        final ProjectEntity project = teamRepo.findById(dto.getProjectId()).get();
 
         if(!project.isStart())
             project.setStart(true);
         else
             throw new IllegalArgumentException("이미 시작한 프로젝트");
+
+        // 팀원 선택 & 이메일 전송
+        selectApplicant(dto.getMemberIdList());
 
         teamRepo.save(project);
     }

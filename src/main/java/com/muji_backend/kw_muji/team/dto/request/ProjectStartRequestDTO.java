@@ -1,16 +1,17 @@
 package com.muji_backend.kw_muji.team.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApplicantRequestDTO {
-    @NotEmpty(message = "지원자 아이디가 비어있습니다.")
-    private Long id;
+public class ProjectStartRequestDTO {
+    private Long projectId;
+    private List<Long> memberIdList; // 지원자 id 리스트
 }

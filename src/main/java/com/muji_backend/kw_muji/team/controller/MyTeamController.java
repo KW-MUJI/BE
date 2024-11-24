@@ -1,8 +1,8 @@
 package com.muji_backend.kw_muji.team.controller;
 
 import com.muji_backend.kw_muji.common.entity.ProjectEntity;
-import com.muji_backend.kw_muji.team.dto.request.ApplicantRequestDTO;
 import com.muji_backend.kw_muji.team.dto.request.ProjectDetailRequestDTO;
+import com.muji_backend.kw_muji.team.dto.request.ProjectStartRequestDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyCreatedProjectResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.MyProjectResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.ProjectDetailResponseDTO;
@@ -14,7 +14,6 @@ import com.muji_backend.kw_muji.common.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,20 +57,6 @@ public class MyTeamController {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "MY 모집 팀플 로딩 오류. 잠시 후 다시 시도해주세요."));
-        }
-    }
-
-    @PatchMapping("/select")
-    public ResponseEntity<Map<String, Object>> selectMember(@RequestBody ApplicantRequestDTO dto, BindingResult bindingResult) {
-        try {
-            myTeamService.validation(bindingResult, "id");
-            myTeamService.selectApplicant(dto.getId());
-
-            return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", true));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "팀원 선택 오류. 잠시 후 다시 시도해주세요."));
         }
     }
 
@@ -139,13 +124,13 @@ public class MyTeamController {
         }
     }
 
-    @PatchMapping("/start/{projectId}")
-    public ResponseEntity<Map<String, Object>> startProject(@AuthenticationPrincipal UserEntity userInfo, @PathVariable Long projectId) {
+    @PatchMapping("/start")
+    public ResponseEntity<Map<String, Object>> startProject(@AuthenticationPrincipal UserEntity userInfo, @RequestBody ProjectStartRequestDTO dto) {
         try {
-            if(!myTeamService.isMyProject(projectId, userInfo))
+            if(!myTeamService.isMyProject(dto.getProjectId(), userInfo))
                 throw new IllegalArgumentException("내가 생성한 프로젝트가 아님");
 
-            myTeamService.updateStart(projectId);
+            myTeamService.updateStart(dto);
 
             return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException e) {
