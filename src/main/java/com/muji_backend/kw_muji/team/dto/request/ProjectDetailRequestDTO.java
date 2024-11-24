@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class ProjectDetailRequestDTO {
     private String description;
     private String image;
     private boolean isDeleteImage;
+    private LocalDate deadlineAt;
 }
