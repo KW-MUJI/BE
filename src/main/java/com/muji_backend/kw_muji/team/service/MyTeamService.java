@@ -23,6 +23,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,6 +42,9 @@ public class MyTeamService {
 
     @Value("${cloud.aws.s3.folder.folderName2}")
     private String projectImageBucketFolder;
+
+    @Value("${cloud.aws.s3.url}")
+    private String bucketURL;
 
     public List<MyProjectResponseDTO> getMyProjects(final UserEntity user) {
         final List<ParticipationEntity> participationList = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER); // 내가 맴버로 참가한 참가자 리스트
@@ -84,14 +89,25 @@ public class MyTeamService {
             applicants.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.APPLICANT));
 
             for(ParticipationEntity applicant : applicants) {
-                final ApplicantResponseDTO member = ApplicantResponseDTO.builder()
-                        .id(applicant.getId())
-                        .image(applicant.getUsers().getImage())
-                        .name(applicant.getUsers().getName())
-                        .stuNum(applicant.getUsers().getStuNum())
-                        .major(applicant.getUsers().getMajor())
-                        .resume(applicant.getResumePath())
-                        .build();
+                final ApplicantResponseDTO member;
+                final UserEntity userInfo = applicant.getUsers();
+                try {
+                    member = ApplicantResponseDTO.builder()
+                            .id(applicant.getId())
+                            .image(applicant.getUsers().getImage() != null
+                                    ? bucketURL + URLEncoder.encode(userInfo.getImage(), "UTF-8")
+                                    : "")
+                            .name(applicant.getUsers().getName())
+                            .stuNum(applicant.getUsers().getStuNum())
+                            .major(applicant.getUsers().getMajor())
+                            .resume(applicant.getResumePath() != null
+                                    ? bucketURL + URLEncoder.encode(applicant.getResumePath(), "UTF-8")
+                                    : "")
+                            .build();
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+
                 members.add(member);
             }
 
