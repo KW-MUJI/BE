@@ -89,6 +89,7 @@ public class MyTeamService {
             final List<ApplicantResponseDTO> members = new ArrayList<>();
             final List<ParticipationEntity> applicants = new ArrayList<>();
             applicants.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.APPLICANT));
+            applicants.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.MEMBER));
 
             for(ParticipationEntity applicant : applicants) {
                 final ApplicantResponseDTO member;
