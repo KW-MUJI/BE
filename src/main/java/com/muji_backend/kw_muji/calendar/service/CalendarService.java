@@ -71,6 +71,7 @@ public class CalendarService {
         // 참여중인 프로젝트 일정 조회
         List<CalendarResponseDto.ProjectEventDto> projectEvents = safeList(() -> projects.stream()
                 .flatMap(project -> userEventLinkRepository.findAllByProject(project).stream())
+                .filter(link -> link.getUsers().getId().equals(userInfo.getId())) // 타 유저 일정 중복 조회 방지
                 .map(link -> {
                     UserCalendarEntity calendar = link.getUserCalendar();
                     ProjectEntity project = link.getProject();
