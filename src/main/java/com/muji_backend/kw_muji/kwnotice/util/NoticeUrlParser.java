@@ -16,10 +16,17 @@ public class NoticeUrlParser {
     private static final String TITLE_SELECTOR = "div.board-text a";
     private static final String INFO_SELECTOR = "p.info";
     private static final String LAST_PAGE_SELECTOR = "a.ico-page.last";
+    private static final String EMPTY_NOTICE_SELECTOR = "li.list_none";
 
     public NoticeResponse parse(Document doc, String baseUrl) {
         List<NoticeResponse.Notice>  notices = new ArrayList<>();
         Elements elements = doc.select("div.board-list-box ul li");
+
+        // 게시물이 없는 경우 확인
+        Element emptyNoticeElement = doc.selectFirst(EMPTY_NOTICE_SELECTOR);
+        if (emptyNoticeElement != null && "등록된 글이 없습니다.".equals(emptyNoticeElement.text().trim())) {
+            return new NoticeResponse(notices, 1); // 빈 목록과 페이지 1 반환
+        }
 
         for (Element element : elements) {
             String category = element.select(CATEGORY_SELECTOR).text();
