@@ -109,9 +109,11 @@ public class MyTeamController {
 
             final ProjectEntity project = teamService.getProject(dto.getId());
 
+            final boolean isDeleteImage = Boolean.parseBoolean(dto.getIsDeleteImage());
+
             if (file != null && file.length > 0 && !file[0].isEmpty())
                 project.setImage(myTeamService.uploadProjectImage(file, dto.getName()));
-            else if (dto.isDeleteImage()) // 팀 프로젝트 사진 삭제를 요청한 경우
+            else if (isDeleteImage) // 팀 프로젝트 사진 삭제를 요청한 경우
                 myTeamService.deleteProjectImage(userInfo.getId());
 
             myTeamService.updateProject(project, dto);

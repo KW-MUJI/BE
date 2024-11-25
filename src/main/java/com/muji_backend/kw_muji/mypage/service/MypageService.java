@@ -84,9 +84,11 @@ public class MypageService {
         if (userEntity.getPassword() != null && !userEntity.getPassword().isBlank())
             user.setPassword(userEntity.getPassword());
 
-        if (!dto.isDeleteImage() && userEntity.getImage() != null && !userEntity.getImage().isBlank())
+        final boolean isDeleteImage = Boolean.parseBoolean(dto.getIsDeleteImage());
+
+        if (!isDeleteImage && userEntity.getImage() != null && !userEntity.getImage().isBlank())
             user.setImage(userEntity.getImage());
-        else if (dto.isDeleteImage())
+        else if (isDeleteImage)
             user.setImage(null);
 
         return mypageRepo.save(user);
