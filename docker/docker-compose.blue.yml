@@ -9,3 +9,6 @@ services:
       - "8081:8080"
     # 컨테이너의 이름
     container_name: spring-blue
+    # 환경변수 - 한국 시간 설정
+    environment:
+      - TZ=Asia/Seoul
