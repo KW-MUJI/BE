@@ -29,11 +29,9 @@ public class NoticeController {
             NoticeResponse notices = noticeService.getKwHomeNotices(page, searchVal, srCategoryId);
             return ResponseEntity.ok().body(Map.of("code", 200, "data", notices));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(500).body(Map.of("code", 500, "data", "처리 중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(Map.of("code", 500, "data", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("code", 500, "message", e.getMessage()));
         }
     }
 }
