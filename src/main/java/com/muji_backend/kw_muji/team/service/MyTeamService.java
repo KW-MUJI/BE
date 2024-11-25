@@ -47,7 +47,9 @@ public class MyTeamService {
     private String bucketURL;
 
     public List<MyProjectResponseDTO> getMyProjects(final UserEntity user) {
-        final List<ParticipationEntity> participationList = roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER); // 내가 맴버로 참가한 참가자 리스트
+        final List<ParticipationEntity> participationList = new ArrayList<>();
+        participationList.addAll(roleRepo.findAllByUsersAndRole(user, ProjectRole.CREATOR)); // 내가 생성자로 참가한 참가자 리스트
+        participationList.addAll(roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER)); // 내가 맴버로 참가한 참가자 리스트
 
         return participationList.stream().map(list -> {
             final MyProjectResponseDTO myProjectResponseDTO = new MyProjectResponseDTO();
@@ -87,6 +89,7 @@ public class MyTeamService {
             final List<ApplicantResponseDTO> members = new ArrayList<>();
             final List<ParticipationEntity> applicants = new ArrayList<>();
             applicants.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.APPLICANT));
+            applicants.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.MEMBER));
 
             for(ParticipationEntity applicant : applicants) {
                 final ApplicantResponseDTO member;
@@ -222,6 +225,9 @@ public class MyTeamService {
 
         // 팀원 선택 & 이메일 전송
         selectApplicant(dto.getMemberIdList());
+
+        // isOnGoing false
+        project.setOnGoing(false);
 
         teamRepo.save(project);
     }
