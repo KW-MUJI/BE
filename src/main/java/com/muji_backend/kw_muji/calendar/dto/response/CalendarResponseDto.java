@@ -1,5 +1,6 @@
 package com.muji_backend.kw_muji.calendar.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class CalendarResponseDto {
 
     private List<ProjectDto> projects;
@@ -46,6 +48,7 @@ public class CalendarResponseDto {
     public static class UserEventDto {
         private Long usercalendarId;
         private String title;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime eventDate;
     }
 
@@ -56,6 +59,7 @@ public class CalendarResponseDto {
         private Long projectId;
         private String name;
         private String title;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime eventDate;
     }
 }

@@ -24,7 +24,7 @@ public class UserEventLinkEntity {
 
     // project : userEventLink = 1 : N
     @ManyToOne(targetEntity = ProjectEntity.class)
-    @JoinColumn(name = "projectId", nullable = false)
+    @JoinColumn(name = "projectId")
     private ProjectEntity project;
 
     // userCalendar : userEventLink = 1 : N
