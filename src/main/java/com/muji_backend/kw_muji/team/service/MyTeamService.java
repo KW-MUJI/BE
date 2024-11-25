@@ -223,6 +223,9 @@ public class MyTeamService {
         // 팀원 선택 & 이메일 전송
         selectApplicant(dto.getMemberIdList());
 
+        // isOnGoing false
+        project.setOnGoing(false);
+
         teamRepo.save(project);
     }
 }
