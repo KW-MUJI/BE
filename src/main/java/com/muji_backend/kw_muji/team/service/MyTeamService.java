@@ -181,9 +181,11 @@ public class MyTeamService {
         if(dto.getDescription() != null && !dto.getDescription().isBlank())
             project.setDescription(dto.getDescription());
 
-        if(!dto.isDeleteImage() && project.getImage() != null && !project.getImage().isBlank())
+        final boolean isDeleteImage = Boolean.parseBoolean(dto.getIsDeleteImage());
+
+        if(!isDeleteImage && project.getImage() != null && !project.getImage().isBlank())
             project.setImage(project.getImage());
-        else if(dto.isDeleteImage())
+        else if(isDeleteImage)
             project.setImage(null);
 
         if(dto.getDeadlineAt() != null)
