@@ -88,14 +88,17 @@ public class MypageController {
             mypageService.validation(bindingResult, "name");
             mypageService.validation(bindingResult, "stuNum");
             mypageService.validation(bindingResult, "major");
-            mypageService.validation(bindingResult, "password");
-            mypageService.validation(bindingResult, "confirmPassword");
 
-            if (!dto.getPassword().equals(dto.getConfirmPassword()))
-                throw new IllegalArgumentException("비밀번호가 일치하지 않음");
+            // 비밀번호와 확인 비밀번호가 둘 다 비어 있지 않은 경우만 처리
+            if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+                mypageService.validation(bindingResult, "password");
+                mypageService.validation(bindingResult, "confirmPassword");
 
-            if (!dto.getPassword().isBlank())
+                if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+                    throw new IllegalArgumentException("비밀번호가 일치하지 않음");
+                }
                 userInfo.setPassword(pwdEncoder.encode(dto.getPassword()));
+            }
 
             final boolean isDeleteImage = Boolean.parseBoolean(dto.getIsDeleteImage());
 
