@@ -17,7 +17,7 @@ import java.util.List;
 public class TeamScheduledTask {
     private final TeamRepository teamRepo;
 
-    @Scheduled(cron = "0 22 1 * * *")
+    @Scheduled(cron = "0 30 1 * * *")
     @Transactional
     public void updateTeamStatus() {
         LocalDateTime today = LocalDate.now(ZoneId.of("Asia/Seoul")).atStartOfDay();
