@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Component
@@ -23,7 +24,7 @@ public class SurveyScheduledTask {
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void updateSurveyStatus() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
         // 현재 ongoing 상태인 설문조사 중 endDate가 오늘보다 이전인 것들을 검색
         List<SurveyEntity> ongoingSurveys = surveyRepository.findByIsOngoingTrueAndEndDateLessThan(today);
