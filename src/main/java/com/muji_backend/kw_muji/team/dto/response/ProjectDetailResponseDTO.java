@@ -1,5 +1,6 @@
 package com.muji_backend.kw_muji.team.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class ProjectDetailResponseDTO {
     private LocalDate deadlineAt;
     private String image;
     private ProjectRole role;
+    @JsonProperty("isOngoing")
     private boolean isOnGoing;
     private boolean start;
 }

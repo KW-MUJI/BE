@@ -1,5 +1,6 @@
 package com.muji_backend.kw_muji.mypage.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateRequestDTO {
     @NotNull
+    @JsonProperty("isDeleteImage")
     private String isDeleteImage;
 
     @NotEmpty(message = "이름을 입력해 주세요")

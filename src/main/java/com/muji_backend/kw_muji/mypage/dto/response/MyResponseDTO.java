@@ -1,6 +1,7 @@
 package com.muji_backend.kw_muji.mypage.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,6 +39,7 @@ public class MyResponseDTO {
         private String name;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime deadlineAt;
+        @JsonProperty("isOngoing")
         private boolean isOngoing;
     }
 
@@ -48,6 +50,7 @@ public class MyResponseDTO {
         private Long surveyId;
         private String title;
         private LocalDate endDate;
+        @JsonProperty("isOngoing")
         private boolean isOngoing;
     }
 
