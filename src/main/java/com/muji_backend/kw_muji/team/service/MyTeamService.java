@@ -51,30 +51,32 @@ public class MyTeamService {
         participationList.addAll(roleRepo.findAllByUsersAndRole(user, ProjectRole.CREATOR)); // 내가 생성자로 참가한 참가자 리스트
         participationList.addAll(roleRepo.findAllByUsersAndRole(user, ProjectRole.MEMBER)); // 내가 맴버로 참가한 참가자 리스트
 
-        return participationList.stream().map(list -> {
-            final MyProjectResponseDTO myProjectResponseDTO = new MyProjectResponseDTO();
-            myProjectResponseDTO.setId(list.getProject().getId());
-            myProjectResponseDTO.setName(list.getProject().getName());
+        return participationList.stream()
+                .filter(participation -> participation.getProject().isStart())
+                .map(list -> {
+                    final MyProjectResponseDTO myProjectResponseDTO = new MyProjectResponseDTO();
+                    myProjectResponseDTO.setId(list.getProject().getId());
+                    myProjectResponseDTO.setName(list.getProject().getName());
 
-            final List<MemberResponseDTO> members = new ArrayList<>();
-            final List<ParticipationEntity> participations = new ArrayList<>();
-            participations.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.CREATOR));
-            participations.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.MEMBER));
+                    final List<MemberResponseDTO> members = new ArrayList<>();
+                    final List<ParticipationEntity> participations = new ArrayList<>();
+                    participations.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.CREATOR));
+                    participations.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.MEMBER));
 
-            for(ParticipationEntity participation : participations) {
-                final MemberResponseDTO member = MemberResponseDTO.builder()
-                        .image(participation.getUsers().getImage())
-                        .name(participation.getUsers().getName())
-                        .stuNum(participation.getUsers().getStuNum())
-                        .major(participation.getUsers().getMajor())
-                        .email(participation.getUsers().getEmail())
-                        .build();
-                members.add(member);
-            }
+                    for(ParticipationEntity participation : participations) {
+                        final MemberResponseDTO member = MemberResponseDTO.builder()
+                            .image(participation.getUsers().getImage())
+                            .name(participation.getUsers().getName())
+                            .stuNum(participation.getUsers().getStuNum())
+                            .major(participation.getUsers().getMajor())
+                            .email(participation.getUsers().getEmail())
+                            .build();
+                    members.add(member);
+                    }
 
-            myProjectResponseDTO.setMembers(members);
-            return myProjectResponseDTO;
-        }).toList();
+                    myProjectResponseDTO.setMembers(members);
+                    return myProjectResponseDTO;
+                }).toList();
     }
 
     public List<MyCreatedProjectResponseDTO> getMyCreatedProjects(final UserEntity user) {
