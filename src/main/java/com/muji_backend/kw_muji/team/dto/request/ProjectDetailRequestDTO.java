@@ -15,6 +15,6 @@ public class ProjectDetailRequestDTO {
     private Long id;
     private String name;
     private String description;
-    private boolean isDeleteImage;
+    private String isDeleteImage;
     private LocalDate deadlineAt;
 }

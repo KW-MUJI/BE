@@ -97,9 +97,11 @@ public class MypageController {
             if (!dto.getPassword().isBlank())
                 userInfo.setPassword(pwdEncoder.encode(dto.getPassword()));
 
+            final boolean isDeleteImage = Boolean.parseBoolean(dto.getIsDeleteImage());
+
             if (file != null && file.length > 0 && !file[0].isEmpty())
                 userInfo.setImage(mypageService.uploadUserImage(file, dto.getName(), userInfo.getEmail()));
-            else if (dto.isDeleteImage()) // 프로필 사진 삭제를 요청한 경우
+            else if (isDeleteImage) // 프로필 사진 삭제를 요청한 경우
                 mypageService.deleteUserImage(userInfo.getEmail());
 
             final UserEntity updateUser = mypageService.updateUser(userInfo, dto);
