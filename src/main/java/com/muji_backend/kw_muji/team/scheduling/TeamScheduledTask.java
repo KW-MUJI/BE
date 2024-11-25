@@ -8,18 +8,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TeamSchefuledTask {
+public class TeamScheduledTask {
     private final TeamRepository teamRepo;
 
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void updateTeamStatus() {
-        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        LocalDateTime today = LocalDate.now(ZoneId.of("Asia/Seoul")).atStartOfDay();
 
         List<ProjectEntity> ongoingProjects = teamRepo.findAllByIsOnGoingTrueAndDeadlineAtLessThan(today);
 
