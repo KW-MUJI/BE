@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -39,10 +40,10 @@ public class TeamController {
     @Value("${cloud.aws.s3.url}")
     private String bucketURL;
 
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> writeProject(@AuthenticationPrincipal UserEntity userInfo,
-                                                            @Valid @RequestBody RegisterRequestDTO dto,
-                                                            @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> writeProject(
+            @AuthenticationPrincipal UserEntity userInfo,
+            @ModelAttribute RegisterRequestDTO dto, BindingResult bindingResult) {
         try {
             // 유효성 검사
             teamService.validation(bindingResult, "name");
@@ -50,8 +51,9 @@ public class TeamController {
 
             final ProjectEntity teamProject = new ProjectEntity();
 
-            if(file != null && file.length > 0 && !file[0].isEmpty())
-                teamProject.setImage(teamService.uploadProjectImage(file, dto.getName()));
+            if (dto.getImage() != null && dto.getImage().length > 0 && !dto.getImage()[0].isEmpty()) {
+                teamProject.setImage(teamService.uploadProjectImage(dto.getImage(), dto.getName()));
+            }
 
             teamProject.setName(dto.getName());
             teamProject.setDescription(dto.getDescription());
@@ -63,16 +65,16 @@ public class TeamController {
                     .users(userInfo)
                     .build();
 
-            if (teamProject.getParticipation() == null)
+            if (teamProject.getParticipation() == null) {
                 teamProject.setParticipation(new ArrayList<>());
-
+            }
             teamProject.getParticipation().add(participation);
 
             teamService.registerProject(teamProject);
 
-            return org.springframework.http.ResponseEntity.ok().body(Map.of("code", 200, "data", true));
+            return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
         } catch (IllegalArgumentException | IOException e) {
-            return org.springframework.http.ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("code", 400, "data", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("code", 500, "data", "팀플 모집 글쓰기 오류. 잠시 후 다시 시도해주세요."));
         }
