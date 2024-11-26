@@ -41,7 +41,7 @@ public class TeamController {
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> writeProject(@AuthenticationPrincipal UserEntity userInfo,
-                                                            @Valid RegisterRequestDTO dto,
+                                                            @Valid @RequestBody RegisterRequestDTO dto,
                                                             @RequestParam(value = "image", required = false) MultipartFile[] file, BindingResult bindingResult) {
         try {
             // 유효성 검사
