@@ -7,11 +7,9 @@ import com.muji_backend.kw_muji.common.entity.UserEntity;
 import com.muji_backend.kw_muji.common.entity.enums.ProjectRole;
 import com.muji_backend.kw_muji.team.dto.request.RegisterRequestDTO;
 import com.muji_backend.kw_muji.team.dto.request.ResumeRequestDTO;
-import com.muji_backend.kw_muji.team.dto.response.ProjectListResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.ProjectDetailResponseDTO;
 import com.muji_backend.kw_muji.team.dto.response.ResumeListResponseDTO;
 import com.muji_backend.kw_muji.team.service.TeamService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,13 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
