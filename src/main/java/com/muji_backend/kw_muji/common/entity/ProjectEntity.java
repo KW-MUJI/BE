@@ -22,7 +22,7 @@ public class ProjectEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(length = 10000, nullable = false)
     private String description;
 
     @Column(nullable = false)
