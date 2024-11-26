@@ -64,14 +64,21 @@ public class MyTeamService {
                     participations.addAll(roleRepo.findAllByProjectAndRole(list.getProject(), ProjectRole.MEMBER));
 
                     for(ParticipationEntity participation : participations) {
-                        final MemberResponseDTO member = MemberResponseDTO.builder()
-                            .image(participation.getUsers().getImage())
-                            .name(participation.getUsers().getName())
-                            .stuNum(participation.getUsers().getStuNum())
-                            .major(participation.getUsers().getMajor())
-                            .email(participation.getUsers().getEmail())
-                            .build();
-                    members.add(member);
+                        final MemberResponseDTO member;
+                        final UserEntity userInfo = participation.getUsers();
+                        try {
+                            member = MemberResponseDTO.builder()
+                                .image(participation.getUsers().getImage() != null ? bucketURL + URLEncoder.encode(userInfo.getImage(), "UTF-8")
+                                        : "")
+                                .name(userInfo.getName())
+                                .stuNum(userInfo.getStuNum())
+                                .major(userInfo.getMajor())
+                                .email(userInfo.getEmail())
+                                .build();
+                        } catch (UnsupportedEncodingException e) {
+                            throw new RuntimeException(e);
+                        }
+                        members.add(member);
                     }
 
                     myProjectResponseDTO.setMembers(members);
@@ -99,12 +106,12 @@ public class MyTeamService {
                 try {
                     member = ApplicantResponseDTO.builder()
                             .id(applicant.getId())
-                            .image(applicant.getUsers().getImage() != null
+                            .image(userInfo.getImage() != null
                                     ? bucketURL + URLEncoder.encode(userInfo.getImage(), "UTF-8")
                                     : "")
-                            .name(applicant.getUsers().getName())
-                            .stuNum(applicant.getUsers().getStuNum())
-                            .major(applicant.getUsers().getMajor())
+                            .name(userInfo.getName())
+                            .stuNum(userInfo.getStuNum())
+                            .major(userInfo.getMajor())
                             .resume(applicant.getResumePath() != null
                                     ? bucketURL + URLEncoder.encode(applicant.getResumePath(), "UTF-8")
                                     : "")
