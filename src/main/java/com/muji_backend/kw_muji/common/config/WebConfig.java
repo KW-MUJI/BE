@@ -33,7 +33,8 @@ public class WebConfig implements WebMvcConfigurer {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // http 객체를 이용해서 http 요청에 대한 보안 설정
         http
-                .cors(withDefaults())
+                //.cors(withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(CsrfConfigurer::disable)
                 .httpBasic(withDefaults())
                 .sessionManagement(sessionManagement -> sessionManagement
@@ -58,7 +59,8 @@ public class WebConfig implements WebMvcConfigurer {
         // cors 설정
         config.setAllowCredentials(true);
         // config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
-        config.setAllowedOriginPatterns(Arrays.asList("https://kwmuji.com"));
+        // config.setAllowedOriginPatterns(Arrays.asList("https://kwmuji.com"));
+        config.setAllowedOrigins(Arrays.asList("https://kwmuji.com"));
         config.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setExposedHeaders(Arrays.asList("*"));
