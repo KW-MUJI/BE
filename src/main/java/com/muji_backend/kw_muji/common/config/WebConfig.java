@@ -1,7 +1,6 @@
 package com.muji_backend.kw_muji.common.config;
 
 import com.muji_backend.kw_muji.common.security.JwtAuthenticationFilter;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -46,10 +45,7 @@ public class WebConfig implements WebMvcConfigurer {
                         .anyRequest().authenticated()) // 나머지 모든 요청은 인증 필요
                 .requiresChannel(channelConfigurer -> channelConfigurer
                         .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
-                        .requiresSecure())
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
-                );
+                        .requiresSecure());
 
         http.addFilterAfter(jwtAuthenticationFilter, CorsFilter.class);
 
