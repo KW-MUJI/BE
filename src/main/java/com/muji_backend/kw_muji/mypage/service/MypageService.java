@@ -112,8 +112,8 @@ public class MypageService {
         if (files.length > 1)
             throw new IllegalArgumentException("프로필 이미지가 1개를 초과함");
 
-        if (!Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/jpeg"))
-            throw new IllegalArgumentException("프로필 이미지의 타입이 jpg가 아님");
+        if (!Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/png"))
+            throw new IllegalArgumentException("프로필 이미지의 타입을 확인해주세요");
 
         // 파일 이름 가공
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -122,7 +122,13 @@ public class MypageService {
         final String[] fileName = new String[]{Objects.requireNonNull(name).substring(0, name.length() - 4)};
 
         // S3 Key 구성
-        final String S3Key = userImageBucketFolder + fileName[0] + "\\" + userName + "\\" + dateFormat.format(time) + ".jpg";
+        String S3Key = null;
+        if(Objects.equals(files[0].getContentType(), "image/jpeg")) {
+            S3Key = userImageBucketFolder + fileName[0] + "\\" + userName + "\\" + dateFormat.format(time) + ".jpg";
+        } else if(Objects.equals(files[0].getContentType(), "image/png")) {
+            S3Key = userImageBucketFolder + fileName[0] + "\\" + userName + "\\" + dateFormat.format(time) + ".png";
+        }
+
 
         final ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(files[0].getSize());
