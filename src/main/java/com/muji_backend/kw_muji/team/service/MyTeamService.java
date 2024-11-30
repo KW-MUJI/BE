@@ -162,8 +162,8 @@ public class MyTeamService {
             throw new IllegalArgumentException("프로젝트 이미지가 1개를 초과함");
         }
 
-        if(!Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/jpeg")) {
-            throw new IllegalArgumentException("프로젝트 이미지의 타입이 jpg가 아님");
+        if(!Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/jpeg") && !Objects.equals(files[0].getContentType(), "image/png")) {
+            throw new IllegalArgumentException("프로젝트 이미지의 타입을 확인해주세요");
         }
 
         // 파일 이름 가공
@@ -173,7 +173,12 @@ public class MyTeamService {
         final String[] fileName = new String[]{Objects.requireNonNull(name).substring(0, name.length() - 4)};
 
         // S3 Key 구성
-        final String S3Key = projectImageBucketFolder + fileName[0] + "\\" + title + "\\" + dateFormat.format(time) + ".jpg";
+        String S3Key = null;
+        if(Objects.equals(files[0].getContentType(), "image/jpeg")) {
+            S3Key = projectImageBucketFolder + fileName[0] + "\\" + title + "\\" + dateFormat.format(time) + ".jpg";
+        } else if (Objects.equals(files[0].getContentType(), "image/png")) {
+            S3Key = projectImageBucketFolder + fileName[0] + "\\" + title + "\\" + dateFormat.format(time) + ".png";
+        }
 
         final ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(files[0].getSize());
