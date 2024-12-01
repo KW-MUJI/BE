@@ -94,6 +94,7 @@ public class MyTeamService {
             myCreatedProjectResponseDTO.setId(list.getProject().getId());
             myCreatedProjectResponseDTO.setName(list.getProject().getName());
             myCreatedProjectResponseDTO.setIsOnGoing(list.getProject().isOnGoing());
+            myCreatedProjectResponseDTO.setStart(list.getProject().isStart());
 
             final List<ApplicantResponseDTO> members = new ArrayList<>();
             final List<ParticipationEntity> applicants = new ArrayList<>();

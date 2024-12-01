@@ -17,5 +17,6 @@ public class MyCreatedProjectResponseDTO {
     private String name;
     @JsonProperty("isOngoing")
     private Boolean isOnGoing;
+    private Boolean start;
     private List<ApplicantResponseDTO> applicants;
 }
