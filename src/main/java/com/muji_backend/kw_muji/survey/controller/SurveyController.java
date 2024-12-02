@@ -28,7 +28,15 @@ public class SurveyController {
     public ResponseEntity<?> getSurveyList(@RequestParam(value = "search", required = false) String search,
                                            @RequestParam(value = "page", defaultValue = "0") int page) {
         try {
+            // 시작 시간 측정
+            long startTime = System.nanoTime();
             SurveyResponseDto response = surveyService.getSurveys(search, page);
+            // 끝 시간 측정
+            long endTime = System.nanoTime();
+
+            // 실행 시간 계산 (밀리초 단위로 변환)
+            double executionTime = (endTime - startTime) / 1_000_000_000.0;;
+            System.out.println(executionTime + " s");
             return ResponseEntity.ok().body(Map.of("code", 200, "data", response));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("code", 400, "message", e.getMessage()));
