@@ -24,7 +24,10 @@ public class TokenProvider {
     public String createAccessToken(Optional<UserEntity> user){
         log.info("creating access token");
 
-        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+
+        //Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        // 테스트 용 만료시간 2분
+        Date expiryDate = Date.from(Instant.now().plus(2, ChronoUnit.MINUTES));
         log.info("set access token expiryDate: {}", expiryDate);
 
         return Jwts.builder()
@@ -41,7 +44,9 @@ public class TokenProvider {
     public String createRefreshToken(Optional<UserEntity> user){
         log.info("creating refresh token");
 
-        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+        //Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+        // 테스트 용 만료시간 5분
+        Date expiryDate = Date.from(Instant.now().plus(5, ChronoUnit.MINUTES));
         log.info("set refresh token expiryDate: {}", expiryDate);
 
         return Jwts.builder()
