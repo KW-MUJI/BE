@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,43 +30,66 @@ public class MainService {
 
     public MainResponseDto getMainInfo(UserEntity userInfo, String yearMonth) {
 
-        // 공지사항 불러오기 및 매핑 (각 카테고리별 상위 6개씩)
-        MainResponseDto.Notices notices = new MainResponseDto.Notices(
-                mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "").getNotices()),
-                mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "0").getNotices()),
-                mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "1").getNotices()),
-                mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "2").getNotices()),
-                mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "4").getNotices())
-        );
+        try {
+            // 공지사항 비동기 호출
+            CompletableFuture<List<MainResponseDto.NoticeItem>> generalNotices = CompletableFuture.supplyAsync(() ->
+                    mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "").getNotices()));
+            CompletableFuture<List<MainResponseDto.NoticeItem>> category0Notices = CompletableFuture.supplyAsync(() ->
+                    mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "0").getNotices()));
+            CompletableFuture<List<MainResponseDto.NoticeItem>> category1Notices = CompletableFuture.supplyAsync(() ->
+                    mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "1").getNotices()));
+            CompletableFuture<List<MainResponseDto.NoticeItem>> category2Notices = CompletableFuture.supplyAsync(() ->
+                    mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "2").getNotices()));
+            CompletableFuture<List<MainResponseDto.NoticeItem>> category4Notices = CompletableFuture.supplyAsync(() ->
+                    mapToNoticeItems(noticeService.getKwHomeNotices(1, "", "4").getNotices()));
 
-        // 설문조사 불러오기 (최대 4개)
-        List<SurveyResponseDto.SurveyItemDto> surveys = (surveyService.getSurveys("", 0) != null)
-                ? surveyService.getSurveys("", 0).getSurveys().stream()
-                .limit(4)
-                .collect(Collectors.toList())
-                : List.of();
+            // 모든 공지사항 작업 완료 대기
+            CompletableFuture.allOf(
+                    generalNotices, category0Notices, category1Notices,
+                    category2Notices, category4Notices
+            ).join();
 
-        // 캘린더 이벤트 불러오기 - 캘린더 이벤트는 로그인한 사용자만 조회 가능
-        CalendarResponseDto.EventGroup events = null;
-        if (userInfo != null) {
-            CalendarResponseDto calendarResponseDto = calendarService.getCalendarEvents(userInfo, yearMonth);
-            events = (calendarResponseDto != null) ? calendarResponseDto.getEvents() : new CalendarResponseDto.EventGroup();
+            // 공지사항 결과 병합
+            MainResponseDto.Notices notices = new MainResponseDto.Notices(
+                    generalNotices.get(),
+                    category0Notices.get(),
+                    category1Notices.get(),
+                    category2Notices.get(),
+                    category4Notices.get()
+            );
+
+            // 설문조사 불러오기 (최대 4개)
+            List<SurveyResponseDto.SurveyItemDto> surveys = (surveyService.getSurveys("", 0) != null)
+                    ? surveyService.getSurveys("", 0).getSurveys().stream()
+                    .limit(4)
+                    .collect(Collectors.toList())
+                    : List.of();
+
+            // 캘린더 이벤트 불러오기 - 캘린더 이벤트는 로그인한 사용자만 조회 가능
+            CalendarResponseDto.EventGroup events = null;
+            if (userInfo != null) {
+                CalendarResponseDto calendarResponseDto = calendarService.getCalendarEvents(userInfo, yearMonth);
+                events = (calendarResponseDto != null) ? calendarResponseDto.getEvents() : new CalendarResponseDto.EventGroup();
+            }
+
+            // 팀플 모집 (최대 4개)
+            Map<String, Object> result = teamService.getOnGoingProjects(0, "");
+            List<ProjectListResponseDTO> projects = result.get("projects") != null
+                    ? ((List<ProjectListResponseDTO>) result.get("projects")).stream()
+                    .limit(4)
+                    .toList()
+                    : List.of();
+
+            return MainResponseDto.builder()
+                    .notices(notices)
+                    .surveys(surveys)
+                    .events(events)
+                    .projects(projects)
+                    .build();
+
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("공지사항 병렬 처리 중 오류 발생", e);
         }
-
-        // 팀플 모집 (최대 4개)
-        Map<String, Object> result = teamService.getOnGoingProjects(0, "");
-        List<ProjectListResponseDTO> projects = result.get("projects") != null
-                ? ((List<ProjectListResponseDTO>) result.get("projects")).stream()
-                .limit(4)
-                .toList()
-                : List.of();
-
-        return MainResponseDto.builder()
-                .notices(notices)
-                .surveys(surveys)
-                .events(events)
-                .projects(projects)
-                .build();
     }
 
     // == Private Methods ==
