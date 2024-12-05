@@ -226,7 +226,7 @@ public class MyTeamService {
                 applicant.get().setRole(ProjectRole.MEMBER);
 
             roleRepo.save(applicant.get());
-            teamMailSendService.joinEmail(applicant.get().getUsers().getEmail());
+            teamMailSendService.joinEmail(applicant.get().getUsers().getEmail(), applicant.get().getProject().getName());
         }
     }
 

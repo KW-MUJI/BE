@@ -20,15 +20,59 @@ public class TeamMailSendService {
     @Value("${spring.mail.username}")
     private String username;
 
-    public void joinEmail(String email) {
+    public void joinEmail(String email, String projectName) {
         String setFrom = username; // email-config에 설정한 자신의 이메일 주소를 입력
-        String title = "팀플 시작 알림 이메일"; // 이메일 제목
+        String title = "광운 대학 생활 도우미 : " + projectName + " 프로젝트 시작 알림"; // 이메일 제목
+
+        // HTML 내용
         String content =
-                "광운 대학 생활 도우미입니다." + 	//html 형식으로 작성 !
-                        "<br><br>" +
-                        "신청하신 팀프로젝트가 시작되었습니다." +
-                        "<br>" +
-                        "마이페이지에서 확인 가능합니다."; //이메일 내용 삽입
+            "<div>" +
+            "    <table align='center' width='100%' style='padding: 60px 0; color: #555; font-size: 16px; word-break: keep-all;'>" +
+            "        <tbody>" +
+            "            <tr>" +
+            "                <td>" +
+            "                    <table align='center' style='width: 100%; max-width: 600px; margin: 0 auto; background: #fff;'>" +
+            "                        <tbody>" +
+            "                            <!-- 로고 영역 -->" +
+            "                            <tr>" +
+            "                                <td style='padding-bottom: 22px; text-align: center;'>" +
+            "                                    <div style='font-size: 22px; font-weight: 700; color: #000;'>" +
+            "                                        광운 대학 생활 도우미" +
+            "                                        <br/>" +
+            "                                        <span style='color: #8b0b02;'>광운 무인양품</span>" +
+            "                                    </div>" +
+            "                                </td>" +
+            "                            </tr>" +
+            "                            <!-- 본문 영역 -->" +
+            "                            <tr>" +
+            "                                <td style='border: 10px solid #f2f2f2; padding: 60px 14px; text-align: center;'>" +
+            "                                    <table align='center' style='max-width: 630px; margin: 0 auto; letter-spacing: -1px;'>" +
+            "                                        <tbody>" +
+            "                                            <tr>" +
+            "                                                <td style='font-size: 16px; line-height: 24px; color: #000; text-align: left; font-family: \"Nanum Gothic\", \"맑은 고딕\", \"Malgun Gothic\", \"돋움\", \"Dotum\", Helvetica, \"Apple SD Gothic Neo\", sans-serif;'>" +
+            "                                                    <p style='margin: 0; padding-bottom: 14px; font-weight: 700;'>" +
+            "                                                        축하드립니다! 신청하신 팀 프로젝트가 시작되었습니다." +
+            "                                                    </p>" +
+            "                                                    <p style='margin: 0;'>" +
+            "                                                        <span style='font-weight: bold;'>마이페이지</span>에서 확인 가능합니다." +
+            "                                                    </p>" +
+            "                                                    <p style='margin: 0; padding-bottom: 14px;'>" +
+            "                                                        프로젝트 이름: <span style='font-weight: bold; color: #8b0b02;'>" + projectName + "</span>" +
+            "                                                    </p>" +
+            "                                                </td>" +
+            "                                            </tr>" +
+            "                                        </tbody>" +
+            "                                    </table>" +
+            "                                </td>" +
+            "                            </tr>" +
+            "                        </tbody>" +
+            "                    </table>" +
+            "                </td>" +
+            "            </tr>" +
+            "        </tbody>" +
+            "    </table>" +
+            "</div>";
+
         mailSend(setFrom, email, title, content);
     }
 
