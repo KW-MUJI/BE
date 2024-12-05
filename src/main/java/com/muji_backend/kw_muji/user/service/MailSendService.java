@@ -44,13 +44,61 @@ public class MailSendService {
     public String joinEmail(String email) {
         int authNum = makeRandomNumber();
         String setFrom = username; // email-config에 설정한 자신의 이메일 주소를 입력
-        String title = "인증 이메일"; // 이메일 제목
+        String title = "광운 대학 생활 도우미 : 회원가입 인증번호"; // 이메일 제목
+
+        // HTML 내용
         String content =
-                "광운 대학 생활 도우미를 방문해주셔서 감사합니다." + 	//html 형식으로 작성 !
-                        "<br><br>" +
-                        "인증 번호는 " + authNum + "입니다." +
-                        "<br>" +
-                        "인증번호를 제대로 입력해주세요"; //이메일 내용 삽입
+            "<div>" +
+            "    <table align='center' width='100%' style='padding: 60px 0; color: #555; font-size: 16px; word-break: keep-all;'>" +
+            "        <tbody>" +
+            "            <tr>" +
+            "                <td>" +
+            "                    <table align='center' style='width: 100%; max-width: 600px; margin: 0 auto; background: #fff;'>" +
+            "                        <tbody>" +
+            "                            <!-- 로고 영역 -->" +
+            "                            <tr>" +
+            "                                <td style='padding-bottom: 22px; text-align: center;'>" +
+            "                                    <div style='font-size: 22px; font-weight: 700; color: #000;'>" +
+            "                                        광운 대학 생활 도우미" +
+            "                                        <br/>" +
+            "                                        <span style='color: #8b0b02;'>광운 무인양품</span>" +
+            "                                    </div>" +
+            "                                </td>" +
+            "                            </tr>" +
+            "                            <!-- 본문 영역 -->" +
+            "                            <tr>" +
+            "                                <td style='border: 10px solid #f2f2f2; padding: 60px 14px; text-align: center;'>" +
+            "                                    <table align='center' style='max-width: 630px; margin: 0 auto; letter-spacing: -1px;'>" +
+            "                                        <tbody>" +
+            "                                            <tr>" +
+            "                                                <td style='font-size: 16px; line-height: 24px; color: #000; text-align: left; font-family: \"Nanum Gothic\", \"맑은 고딕\", \"Malgun Gothic\", \"돋움\", \"Dotum\", Helvetica, \"Apple SD Gothic Neo\", sans-serif;'>" +
+            "                                                    <p style='margin: 0; padding-bottom: 14px; font-weight: 700;'>" +
+            "                                                        인증 번호 확인 후<br>" +
+            "                                                        이메일 인증을 완료해주세요." +
+            "                                                    </p>" +
+            "                                                    <p style='margin: 0; padding-bottom: 14px;'>" +
+            "                                                        안녕하세요? <span style='font-weight: bold;'>광운 무인양품</span>입니다." +
+            "                                                    </p>" +
+            "                                                    <p style='margin: 0; padding-bottom: 14px;'>" +
+            "                                                        아래 인증번호를 입력하여 이메일 인증을 완료해주세요." +
+            "                                                    </p>" +
+            "                                                    <p style='margin: 0; font-weight: bold; color: #8b0b02;'>" +
+            "                                                        인증번호 : " + authNum +
+            "                                                    </p>" +
+            "                                                </td>" +
+            "                                            </tr>" +
+            "                                        </tbody>" +
+            "                                    </table>" +
+            "                                </td>" +
+            "                            </tr>" +
+            "                        </tbody>" +
+            "                    </table>" +
+            "                </td>" +
+            "            </tr>" +
+            "        </tbody>" +
+            "    </table>" +
+            "</div>";
+
         mailSend(setFrom, email, title, content, authNum);
 
         return Integer.toString(authNum);
