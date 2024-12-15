@@ -1,18 +1,12 @@
-<div align='center'>
-    <tr>
-        <td style='padding-bottom: 22px; text-align: center;'>
-            <div style='font-size: 25px; font-weight: 700;'>
-                광운 대학 생활 도우미
-                <br/>
-                <span style='color: #8b0b02; font-size: 35px;'>광운 무인양품</span>
-            </div>
-        </td>
-    </tr>
+<div align="center">
+    <img width="300px" alt="Title image" src="https://github.com/user-attachments/assets/9cca16cb-36a4-439c-a9ce-8013bdbe9833">
 </div>
 
-<br/>
+## 💡 Introduction
 
+## ⭐ 서비스 기능
 
+## 📜 시스템 아키텍처
 
 ## 💻 Convention
 
@@ -56,3 +50,5 @@
 | test        | 테스트 관련 코드            |
 | chore       | 빌드 업무 수정, 패키지 매니저 수정 |
 | cicd        | 배포 관련 작업             |
+
+## 👨‍👩‍👧‍👦 팀원 소개
