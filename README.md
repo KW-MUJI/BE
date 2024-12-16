@@ -1,12 +1,27 @@
 <div align="center">
-    <img width="300px" alt="Title image" src="https://github.com/user-attachments/assets/9cca16cb-36a4-439c-a9ce-8013bdbe9833">
+    <a href="https://kwmuji.com/">
+    <img width="300px" alt="KW Muji" src="https://github.com/user-attachments/assets/9cca16cb-36a4-439c-a9ce-8013bdbe9833">
+    </a>
+    <h3>"학생 중심의 학업 및 협업 효율화 플랫폼"</h3>
 </div>
 
-## 💡 Introduction
+<br/>
+
+## 💡 프로젝트 개요
+
+대학 생활을 하게 되면 많은 팀 프로젝트와 설문 조사를 진행하게 됩니다.
+
+팀원을 모집 및 설문 조사를 하기 위해, 대학교 유명 커뮤니티 에브리타임에 글을 올리거나 카카오톡 등 SNS를 통해 개인적인 연락을 하고 있습니다.
+
+하지만, 이 플랫폼들은 팀원 모집과 설문 조사와는 맞지 않는 플랫폼으로 많은 사람들에게 관심을 끌기 어려우며, 이는 학업에 악영향을 끼치게 됩니다.
+
+그래서 광운대학교 학생들의 **팀 프로젝트 효율성을 향상**시키고 **학생들의 학업과 대외활동을 체계적으로 관리**하도록 돕고자, **대학 생활을 통합적으로 관리할 수 있는 플랫폼,** <광운 대학 생활 도우미>를 만들게 되었습니다.
 
 ## ⭐ 서비스 기능
 
-## 📜 시스템 아키텍처
+## ⚒️ 시스템 아키텍처
+
+## 📜 ERD
 
 ## 💻 Convention
 
