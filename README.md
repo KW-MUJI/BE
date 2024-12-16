@@ -21,7 +21,45 @@
 
 ## ⭐ 서비스 기능
 
+### [회원가입 및 로그인]
 
+<img width="100%" src="https://github.com/user-attachments/assets/8978c519-e081-4b7c-9824-f108e62f763d" alt="회원가입 및 로그인"/>
+
+### [팀 프로젝트 팀원 모집 글 작성]
+
+<img width="100%" src="https://github.com/user-attachments/assets/2267f62e-a6dc-415f-b903-4b07707b4744" alt="팀 프로젝트 팀원 모집 글 작성"/>
+
+### [팀 프로젝트 팀원 신청]
+
+<img width="100%" src="https://github.com/user-attachments/assets/49a2f176-d5e7-4cb0-9483-1d48fc749bbd" alt="팀 프로젝트 팀원 신청"/>
+
+### [내가 모집 중인 팀 프로젝트 관리]
+
+<img width="100%" src="https://github.com/user-attachments/assets/31cdade8-1d89-4bdb-8eea-30319b305487" alt="내가 모집 중인 팀 프로젝트 관리"/>
+
+### [설문 조사 요청 글 작성]
+
+<img width="100%" src="https://github.com/user-attachments/assets/c65093f8-61f3-4dd0-bb8a-6249a14afd84" alt="설문 조사 요청 글 작성"/>
+
+### [설문 조사 참여]
+
+<img width="100%" src="https://github.com/user-attachments/assets/869a7168-35c2-4ce5-8dd6-8f1901ffdb78" alt="설문 조사 참여"/>
+
+### [설문 조사 결과 답변 확인]
+
+<img width="100%" src="https://github.com/user-attachments/assets/8eca1629-fc24-425d-9783-d5f9bcd6e406" alt="설문 조사 결과 답변 확인"/>
+
+### [팀 일정, 개인 일정 관리]
+
+<img width="100%" src="https://github.com/user-attachments/assets/559cf942-1849-4522-be18-2a02f9032e61" alt="팀 일정, 개인 일정 관리"/>
+
+### [학교 홈페이지 공지사항 확인]
+
+<img width="100%" src="https://github.com/user-attachments/assets/87c522fd-8e2c-4924-9d88-c9bdbbd612c4" alt="학교 홈페이지 공지사항 확인"/>
+
+### [마이페이지 내 정보 관리]
+
+<img width="100%" src="https://github.com/user-attachments/assets/38cb4129-76cd-4f7a-b9cc-986d17ec8227" alt="마이페이지 내 정보 관리"/>
 
 <br/>
 
