@@ -17,11 +17,25 @@
 
 그래서 광운대학교 학생들의 **팀 프로젝트 효율성을 향상**시키고 **학생들의 학업과 대외활동을 체계적으로 관리**하도록 돕고자, **대학 생활을 통합적으로 관리할 수 있는 플랫폼,** <광운 대학 생활 도우미>를 만들게 되었습니다.
 
+<br/>
+
 ## ⭐ 서비스 기능
+
+
+
+<br/>
 
 ## ⚒️ 시스템 아키텍처
 
+<img width="100%" src="https://github.com/user-attachments/assets/df2e466c-98f7-42e5-a033-efec3cc69cd7" alt="시스템 아키텍처"/>
+
+<br/>
+
 ## 📜 ERD
+
+<img width="100%" src="https://github.com/user-attachments/assets/02071288-edbe-46af-96a1-5b288951370a" alt="ERD"/>
+
+<br/>
 
 ## 💻 Convention
 
@@ -46,6 +60,7 @@
     6. Upstream Repository에서 develop 브랜치에서 최종 release될 브랜치인 main에 PR을 보냅니다.
     7. Deployments와 gitHub Actions의 설정에 따라 모두 정상 통과되면 정상 배포가 완료됩니다.
 
+<br/>
 
 ### Commit Convention
 
@@ -66,4 +81,51 @@
 | chore       | 빌드 업무 수정, 패키지 매니저 수정 |
 | cicd        | 배포 관련 작업             |
 
+<br/>
+
 ## 👨‍👩‍👧‍👦 팀원 소개
+
+<table >
+  <tr height="50px">
+    <td align="center" width="130px">
+      <a href="https://github.com/cjh-19">최지훈</a>
+    </td>
+    <td align="center" width="130px">
+      <a href="https://github.com/pipi-shortstocking">김정윤</a>
+    </td>
+    <td align="center" width="130px">
+      <a href="https://github.com/goodsmell">조은향</a>
+    </td>
+    <td align="center" width="130px">
+      <a href="https://github.com/minggong222">김민곤</a>
+    </td>
+  </tr>
+  <tr height="130px">
+    <td align="center" width="130px">
+      <a href="https://github.com/cjh-19"><img src="https://avatars.githubusercontent.com/u/66457014?v=4" style="border-radius:50%"/></a>
+    </td>
+    <td align="center" width="130px">
+      <a href="https://github.com/pipi-shortstocking"><img src="https://avatars.githubusercontent.com/u/95032287?v=4" style="border-radius:50%" /></a>
+    </td>
+    <td align="center" width="130px">
+      <a href="https://github.com/goodsmell"><img src="https://avatars.githubusercontent.com/u/87801306?v=4" style="border-radius:50%"/></a>
+    </td>
+    <td align="center" width="130px">
+      <a href="https://github.com/minggong222"><img src="https://avatars.githubusercontent.com/u/144299899?v=4" style="border-radius:50%"/></a>
+    </td>
+  </tr>
+  <tr height="50px">
+    <td align="center" width="130px">
+      팀장, BE, DB, Infra(CI/CD) 
+    </td>
+    <td align="center" width="130px">
+      BE, DB
+    </td>
+    <td align="center" width="130px">
+      FE
+    </td>
+    <td align="center" width="130px">
+      FE
+    </td>
+  </tr>
+</table>
