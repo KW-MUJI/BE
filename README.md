@@ -204,6 +204,9 @@
     <td align="center" width="130px">
       <a href="https://github.com/minggong222">김민곤</a>
     </td>
+    <td align="center" width="130px">
+      <a href="https://github.com/mongmongle">신승은</a>
+    </td>
   </tr>
   <tr height="130px">
     <td align="center" width="130px">
@@ -218,6 +221,9 @@
     <td align="center" width="130px">
       <a href="https://github.com/minggong222"><img src="https://avatars.githubusercontent.com/u/144299899?v=4" style="border-radius:50%"/></a>
     </td>
+    <td align="center" width="130px">
+      <a href="https://github.com/mongmongle"><img src="https://avatars.githubusercontent.com/u/189079489?v=4" style="border-radius:50%"/></a>
+    </td>
   </tr>
   <tr height="50px">
     <td align="center" width="130px">
@@ -231,6 +237,9 @@
     </td>
     <td align="center" width="130px">
       FE
+    </td>
+    <td align="center" width="130px">
+      Design
     </td>
   </tr>
 </table>
