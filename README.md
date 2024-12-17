@@ -142,6 +142,20 @@
 
 <br/>
 
+## 🗂 화면 설계서
+
+### 디자인(Figma)
+
+<img width="100%" src="https://github.com/user-attachments/assets/4d4c2655-4d22-4215-96ac-ae0eb065f50b" alt="디자인"/>
+
+<br/>
+
+### 정보 구조도(IA)
+
+<img width="100%" src="https://github.com/user-attachments/assets/f1c0d5ba-9290-4f05-8de6-967405e85c5b" alt="정보 구조도"/>
+
+<br/>
+
 ## 💻 Convention
 
 ### Git Flow 전략
